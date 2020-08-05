@@ -1,0 +1,35 @@
+{
+	"name" : "ctodobom/api-inter",
+	"type" : "package",
+	"description" : "Acesso à API do Banco Inter",
+	"license" : "LGPL-3.0",
+	"keywords" : [
+		"Banco Inter Intermedium Boletos Cobrança"
+	],
+	"autoload" : {
+		"psr-4" : {
+			"ctodobom\\APInterPHP\\" : "src"
+		}
+	},
+	"autoload-dev" : {
+		"psr-4" : {
+			"ctodobom\\APInterPHP\\Tests\\" : "tests"
+		}
+	},
+	"require" : {
+		"php" : ">=7.3"
+	},
+	"require-dev" : {
+		"squizlabs/php_codesniffer" : "^3.5",
+		"phpunit/phpunit" : "^9.1",
+		"scrutinizer/ocular" : "^1.3",
+		"phpstan/phpstan" : "^0.12",
+		"nunomaduro/phpinsights" : "^1.14",
+		"fzaninotto/faker" : "^1.9"
+	},
+	"scripts" : {
+		"phpcbf" : "vendor/bin/phpcbf --standard=psr2 src",
+		"phpcs" : "vendor/bin/phpcs --standard=psr2 src",
+		"phpstan" : "vendor/bin/phpstan analyse src/ --level 7"
+	}
+}

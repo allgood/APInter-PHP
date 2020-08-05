@@ -1,0 +1,16 @@
+language: php
+
+php:
+  - 7.3
+  - 7.4
+
+dist: precise
+sudo: false
+
+before_script:
+  - travis_retry composer self-update
+  - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-source
+
+script:
+  - vendor/bin/phpcs --standard=psr2 src/
+  - vendor/bin/phpunit
