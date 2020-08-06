@@ -181,7 +181,7 @@ class BancoInter
     
     public function baixaBoleto(string $nossoNumero, string $motivo = "ACERTOS")
     {
-        $data = new stdSerializable();
+        $data = new StdSerializable();
         $data->codigoBaixa = $motivo;
         
         $reply = $this->controllerPost("/openbanking/v1/certificado/boletos/".$nossoNumero."/baixas", $data);
