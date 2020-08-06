@@ -38,7 +38,7 @@ $boleto = new Boleto();
 $boleto->setCnpjCPFBeneficiario($cnpj);
 $boleto->setPagador($pagador);
 $boleto->setSeuNumero("123456");
-$boleto->setDataEmissao("2020-08-05");
+$boleto->setDataEmissao("2020-08-06");
 $boleto->setValorNominal(100.10);
 $boleto->setDataVencimento("2020-08-10");
 
@@ -52,8 +52,8 @@ try {
 } catch ( BancoInterException $e ) {
     echo "\n\n".$e->getMessage();
     echo "\n\nCabeçalhos: \n";
-    echo $e->http_headers;
+    echo $e->reply->header;
     echo "\n\nConteúdo: \n";
-    echo $e->http_body;
+    echo $e->reply->body;
 }
 echo "\n\n";

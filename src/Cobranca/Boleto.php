@@ -1,6 +1,8 @@
 <?php
 namespace ctodobom\APInterPHP\Cobranca;
 
+use ctodobom\APInterPHP\BancoInter;
+
 class Boleto implements \JsonSerializable
 {
 
@@ -25,6 +27,8 @@ class Boleto implements \JsonSerializable
     private $codigoBarras = null;
     private $linhaDigitavel = null;
 
+    private $controller = null;
+    
     const SESSENTA_DIAS = "SESSENTA";
     const TRINTA_DIAS = "TRINTA";
     
@@ -150,6 +154,15 @@ class Boleto implements \JsonSerializable
         return $this->mora;
     }
 
+    /**
+     *
+     * @return BancoInter
+     */
+    public function getController() : BancoInter
+    {
+        return $this->controller;
+    }
+    
     /**
      * @param mixed $dataEmissao
      */
@@ -320,6 +333,15 @@ class Boleto implements \JsonSerializable
         $this->linhaDigitavel = $linhaDigitavel;
     }
 
+    /**
+     *
+     * @param BancoInter $controller
+     */
+    public function setController(BancoInter $controller)
+    {
+        $this->controller = $controller;
+    }
+    
     public function __construct()
     {
         $this->mensagem = new Mensagem();
