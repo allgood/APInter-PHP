@@ -48,7 +48,7 @@ class BancoInter
 
     /**
      * Inicializa a conexão com a API
-     * 
+     *
      * @param array $http_params
      */
     private function controllerInit(array $http_params)
@@ -74,7 +74,7 @@ class BancoInter
     }
 
     /**
-     * 
+     *
      * @param string $url
      * @param \JsonSerializable $data
      * @param array $http_params
@@ -107,11 +107,11 @@ class BancoInter
         $reply->header = substr($curlReply, 0, $header_size);
         $reply->body = substr($curlReply, $header_size);
 
-        if ($http_code > 299) {
+        if ($http_code < 200 || $http_code > 299) {
             throw new BancoInterException("Erro HTTP ".$http_code, $http_code, $reply);
         }
         
-        return $reply;         
+        return $reply;
     }
     
     public function controllerGet(string $url, array $http_params = null)
@@ -137,7 +137,7 @@ class BancoInter
         $reply->header = substr($curlReply, 0, $header_size);
         $reply->body = substr($curlReply, $header_size);
         
-        if ($http_code > 299) {
+        if ($http_code < 200 || $http_code > 299) {
             throw new BancoInterException("Erro HTTP ".$http_code, $http_code, $reply);
         }
         
@@ -166,7 +166,7 @@ class BancoInter
     }
 
     /**
-     * 
+     *
      * @param string $nossoNumero
      * @return \stdClass
      */
@@ -189,6 +189,5 @@ class BancoInter
         $replyData = json_decode($reply->body);
         
         return $replyData;
-        
     }
 }
