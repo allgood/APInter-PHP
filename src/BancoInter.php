@@ -107,11 +107,41 @@ class BancoInter
         $reply->header = substr($curlReply, 0, $header_size);
         $reply->body = substr($curlReply, $header_size);
 
-        if ($http_code != 200) {
+        if ($http_code > 299) {
             throw new BancoInterException("Erro HTTP ".$http_code, $http_code, $reply);
         }
         
         return $reply;         
+    }
+    
+    public function controllerGet(string $url, array $http_params = null)
+    {
+        
+        if ($http_params == null) {
+            $http_params=array(
+                'accept: application/json',
+            );
+        }
+        
+        $this->controllerInit($http_params);
+        curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL.$url);
+        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'GET');
+        
+        $curlReply = curl_exec($this->curl);
+        $http_code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
+        $header_size = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
+        curl_close($this->curl);
+        $this->curl = null;
+        
+        $reply = new \stdClass();
+        $reply->header = substr($curlReply, 0, $header_size);
+        $reply->body = substr($curlReply, $header_size);
+        
+        if ($http_code > 299) {
+            throw new BancoInterException("Erro HTTP ".$http_code, $http_code, $reply);
+        }
+        
+        return $reply;
     }
     
     /**
@@ -133,5 +163,32 @@ class BancoInter
         $boleto->setLinhaDigitavel($replyData->linhaDigitavel);
         
         return $boleto;
+    }
+
+    /**
+     * 
+     * @param string $nossoNumero
+     * @return \stdClass
+     */
+    public function getBoleto(string $nossoNumero) : \stdClass
+    {
+        $reply = $this->controllerGet("/openbanking/v1/certificado/boletos/".$nossoNumero);
+
+        $replyData = json_decode($reply->body);
+        
+        return $replyData;
+    }
+    
+    public function baixaBoleto(string $nossoNumero, string $motivo = "ACERTOS")
+    {
+        $data = new stdSerializable();
+        $data->codigoBaixa = $motivo;
+        
+        $reply = $this->controllerPost("/openbanking/v1/certificado/boletos/".$nossoNumero."/baixas", $data);
+        
+        $replyData = json_decode($reply->body);
+        
+        return $replyData;
+        
     }
 }

@@ -56,4 +56,30 @@ try {
     echo "\n\nConteúdo: \n";
     echo $e->reply->body;
 }
+
+
+try {
+    echo "\nConsultando boleto\n";
+    $boleto2 = $banco->getBoleto($boleto->getNossoNumero());
+    var_dump($boleto2);
+} catch ( BancoInterException $e ) {
+    echo "\n\n".$e->getMessage();
+    echo "\n\nCabeçalhos: \n";
+    echo $e->reply->header;
+    echo "\n\nConteúdo: \n";
+    echo $e->reply->body;
+}
+
+try {
+    echo "\nBaixando boleto\n";
+    $banco->baixaBoleto($boleto->getNossoNumero());
+    echo "Boleto Baixado";
+} catch ( BancoInterException $e ) {
+    echo "\n\n".$e->getMessage();
+    echo "\n\nCabeçalhos: \n";
+    echo $e->reply->header;
+    echo "\n\nConteúdo: \n";
+    echo $e->reply->body;
+}
+
 echo "\n\n";
