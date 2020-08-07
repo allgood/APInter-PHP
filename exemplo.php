@@ -38,9 +38,9 @@ $boleto = new Boleto();
 $boleto->setCnpjCPFBeneficiario($cnpj);
 $boleto->setPagador($pagador);
 $boleto->setSeuNumero("123456");
-$boleto->setDataEmissao("2020-08-06");
+$boleto->setDataEmissao(date('Y-m-d'));
 $boleto->setValorNominal(100.10);
-$boleto->setDataVencimento("2020-08-10");
+$boleto->setDataVencimento(date_add(new DateTime() , new DateInterval("P10D"))->format('Y-m-d'));
 
 try {
     $banco->createBoleto($boleto);
@@ -49,6 +49,18 @@ try {
     echo "\n nossoNumero: ".$boleto->getNossoNumero();
     echo "\n codigoBarras: ".$boleto->getCodigoBarras();
     echo "\n linhaDigitavel: ".$boleto->getLinhaDigitavel();
+} catch ( BancoInterException $e ) {
+    echo "\n\n".$e->getMessage();
+    echo "\n\nCabeçalhos: \n";
+    echo $e->reply->header;
+    echo "\n\nConteúdo: \n";
+    echo $e->reply->body;
+}
+
+try {
+    echo "\Download do PDF\n";
+    $pdf = $banco->getPdfBoleto($boleto->getNossoNumero());
+    echo "\n\nSalvo PDF em ".$pdf."\n";
 } catch ( BancoInterException $e ) {
     echo "\n\n".$e->getMessage();
     echo "\n\nCabeçalhos: \n";
@@ -72,8 +84,32 @@ try {
 
 try {
     echo "\nBaixando boleto\n";
-    $banco->baixaBoleto($boleto->getNossoNumero());
+    $banco->baixaBoleto($boleto->getNossoNumero(), INTER_BAIXA_DEVOLUCAO);
     echo "Boleto Baixado";
+} catch ( BancoInterException $e ) {
+    echo "\n\n".$e->getMessage();
+    echo "\n\nCabeçalhos: \n";
+    echo $e->reply->header;
+    echo "\n\nConteúdo: \n";
+    echo $e->reply->body;
+}
+
+try {
+    echo "\nConsultando boleto antigo\n";
+    $boleto2 = $banco->getBoleto("00571817313");
+    var_dump($boleto2);
+} catch ( BancoInterException $e ) {
+    echo "\n\n".$e->getMessage();
+    echo "\n\nCabeçalhos: \n";
+    echo $e->reply->header;
+    echo "\n\nConteúdo: \n";
+    echo $e->reply->body;
+}
+
+try {
+    echo "\nListando boletos vencendo nos próximos 10 dias (apenas a primeira página)\n";
+    $listaBoletos = $banco->listaBoletos(date('Y-m-d'), date_add(new DateTime() , new DateInterval("P10D"))->format('Y-m-d'));
+    var_dump($listaBoletos);
 } catch ( BancoInterException $e ) {
     echo "\n\n".$e->getMessage();
     echo "\n\nCabeçalhos: \n";
