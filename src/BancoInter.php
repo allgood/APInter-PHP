@@ -251,8 +251,14 @@ class BancoInter
      * @param string $ordem Ordem do resultado (default = "NOSSONUMERO")
      * @return \stdClass
      */
-    public function listaBoletos(string $dataInicial, string $dataFinal, $pagina = 0, $linhas = 20, $filtro = "TODOS", $ordem = "NOSSONUMERO") : \stdClass
-    {
+    public function listaBoletos(
+        string $dataInicial,
+        string $dataFinal,
+        $pagina = 0,
+        $linhas = 20,
+        $filtro = "TODOS",
+        $ordem = "NOSSONUMERO"
+    ) : \stdClass {
 
         $url = "/openbanking/v1/certificado/boletos";
         $url .= "?filtrarPor=".$filtro;
