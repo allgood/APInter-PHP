@@ -8,13 +8,19 @@ Inicialmente apenas a criação de boletos é suportada.
 Como usar:
 ----------
 
+### Instalação
+
 Para utilizar a biblioteca através do composer:
 
 ```
 composer require ctodobom/api-inter
 ```
 
-O arquivo [exemplo.php] fornece o básico para a utilização das classes.
+### Documentação 
+
+O arquivo [exemplo.php](exemplo.php) fornece o básico para a utilização das classes.
+
+Também está disponível a [documentação gerada a partir dos fontes](https://ctodobom.github.io/APInter-PHP/index.html).
 
 Licença
 -------

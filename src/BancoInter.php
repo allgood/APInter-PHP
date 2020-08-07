@@ -3,26 +3,26 @@ namespace ctodobom\APInterPHP;
 
 use ctodobom\APInterPHP\Cobranca\Boleto;
 
-define("INTER_BAIXA_ACERTOS","ACERTOS");
-define("INTER_BAIXA_PROTESTADO","PROTESTADO");
-define("INTER_BAIXA_DEVOLUCAO","DEVOLUCAO");
-define("INTER_BAIXA_SUBSTITUICAO","SUBISTITUICAO");
+define("INTER_BAIXA_ACERTOS", "ACERTOS");
+define("INTER_BAIXA_PROTESTADO", "PROTESTADO");
+define("INTER_BAIXA_DEVOLUCAO", "DEVOLUCAO");
+define("INTER_BAIXA_SUBSTITUICAO", "SUBISTITUICAO");
 
-define("INTER_FILTRO_TODOS","TODOS");
-define("INTER_FILTRO_VENCIDOSAVENCER","VENCIDOSAVENCER");
-define("INTER_FILTRO_EXPIRADOS","EXPIRADOS");
-define("INTER_FILTRO_PAGOS","PAGOS");
-define("INTER_FILTRO_TODOSBAIXADOS","TODOSBAIXADOS");
+define("INTER_FILTRO_TODOS", "TODOS");
+define("INTER_FILTRO_VENCIDOSAVENCER", "VENCIDOSAVENCER");
+define("INTER_FILTRO_EXPIRADOS", "EXPIRADOS");
+define("INTER_FILTRO_PAGOS", "PAGOS");
+define("INTER_FILTRO_TODOSBAIXADOS", "TODOSBAIXADOS");
 
-define("INTER_ORDEM_NOSSONUMERO","NOSSONUMERO");
-define("INTER_ORDEM_SEUNUMERO","SEUNUMERO");
-define("INTER_ORDEM_VENCIMENTO","DATAVENCIMENTO_ASC");
-define("INTER_ORDEM_VENCIMENTO_DESC","DATAVENCIMENTO_DSC");
-define("INTER_ORDEM_NOMESACADO","NOMESACADO");
-define("INTER_ORDEM_VALOR","VALOR_ASC");
-define("INTER_ORDEM_VALOR_DESC","VALOR_DSC");
-define("INTER_ORDEM_STATUS","STATUS_ASC");
-define("INTER_ORDEM_STATUS_DESC","STATUS_DSC");
+define("INTER_ORDEM_NOSSONUMERO", "NOSSONUMERO");
+define("INTER_ORDEM_SEUNUMERO", "SEUNUMERO");
+define("INTER_ORDEM_VENCIMENTO", "DATAVENCIMENTO_ASC");
+define("INTER_ORDEM_VENCIMENTO_DESC", "DATAVENCIMENTO_DSC");
+define("INTER_ORDEM_NOMESACADO", "NOMESACADO");
+define("INTER_ORDEM_VALOR", "VALOR_ASC");
+define("INTER_ORDEM_VALOR_DESC", "VALOR_DSC");
+define("INTER_ORDEM_STATUS", "STATUS_ASC");
+define("INTER_ORDEM_STATUS_DESC", "STATUS_DSC");
 
 class BancoInter
 {
@@ -202,7 +202,7 @@ class BancoInter
 
     /**
      * Faz download do PDF do boleto
-     * 
+     *
      * @param string $nossoNumero
      * @param string $savePath Pasta a salvar o arquivo (default para a pasta de upload ou tmp)
      * @throws BancoInterException
@@ -220,7 +220,7 @@ class BancoInter
 
         $reply = $this->controllerGet("/openbanking/v1/certificado/boletos/".$nossoNumero."/pdf", $http_params);
 
-        $filename = tempnam($savePath,"boleto-inter-").".pdf";
+        $filename = tempnam($savePath, "boleto-inter-").".pdf";
         if (!file_put_contents($filename, base64_decode($reply->body))) {
             throw new BancoInterException("Erro decodificando e salvando PDF", 0, $reply);
         }
@@ -242,7 +242,7 @@ class BancoInter
     
     /**
      * Retorna lista de boletos registrados no banco
-     * 
+     *
      * @param string $dataInicial Data de vencimento inicial
      * @param string $dataFinal Data de vencimento final
      * @param number $pagina Página de resultado (default = 0)
@@ -251,7 +251,7 @@ class BancoInter
      * @param string $ordem Ordem do resultado (default = "NOSSONUMERO")
      * @return \stdClass
      */
-    public function listaBoletos(string $dataInicial, string $dataFinal, $pagina = 0 , $linhas = 20 , $filtro = "TODOS" , $ordem = "NOSSONUMERO") : \stdClass
+    public function listaBoletos(string $dataInicial, string $dataFinal, $pagina = 0, $linhas = 20, $filtro = "TODOS", $ordem = "NOSSONUMERO") : \stdClass
     {
 
         $url = "/openbanking/v1/certificado/boletos";
