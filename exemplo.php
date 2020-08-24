@@ -25,7 +25,7 @@ $chavePrivada = "/caminho/da/chaveprivada.key";
 // do banco central e aparecerão no DDA dos sacados.
 //
 // Os dados de exemplo NÃO SÃO VÁLIDOS e se não forem
-// alterados o script de teste não funcionará.
+// alterados o script de exemplo não funcionará.
 
 
 
