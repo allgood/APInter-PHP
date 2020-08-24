@@ -13,6 +13,22 @@ $cnpj = "12123123000112";
 $certificado = "/caminho/do/certificado.pem";
 $chavePrivada = "/caminho/da/chaveprivada.key";
 
+
+
+// A T E N Ç Ã O
+//
+// Todos os dados verificáveis precisam ser válidos
+// Utilize sempre CPF/CNPJ, CEP, Cidade e Estado válidos
+// Para evitar importunar estranhos utilize seus próprios
+// dados ou de alguma pessoa que esteja ciente, pois as
+// cobranças sempre são cadastradas no sistema quente
+// do banco central e aparecerão no DDA dos sacados.
+//
+// Os dados de exemplo NÃO SÃO VÁLIDOS e se não forem
+// alterados o script de exemplo não funcionará.
+
+
+
 // dados de teste
 $cpfPagador = "12312312312";
 $estadoPagador = "XX";
