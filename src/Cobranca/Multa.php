@@ -7,6 +7,7 @@ class Multa implements \JsonSerializable
     private $codigoMulta = "NAOTEMMULTA";
     private $valor = 0.0;
     private $taxa = 0.0;
+    private $data = "";
     
     const NAO_TEM_MULTA = 'NAOTEMMULTA';
     const VALOR_FIXO = 'VALORFIXO';
@@ -36,7 +37,15 @@ class Multa implements \JsonSerializable
     }
 
     /**
-     * @param string $codigoMulta
+     * @return string
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+    
+    /**
+     * @param string $codigos
      */
     public function setCodigoMulta($codigoMulta)
     {
@@ -57,6 +66,14 @@ class Multa implements \JsonSerializable
     public function setTaxa($taxa)
     {
         $this->taxa = $taxa;
+    }
+
+    /**
+     * @param string $data
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
     }
     
     public function jsonSerialize()

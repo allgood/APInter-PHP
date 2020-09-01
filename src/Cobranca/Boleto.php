@@ -272,7 +272,7 @@ class Boleto implements \JsonSerializable
     /**
      * @param \ctodobom\APInterPHP\Cobranca\Multa $multa
      */
-    public function setMulta($multa) : Multa
+    public function setMulta(Multa $multa)
     {
         $this->multa = $multa;
     }
@@ -280,7 +280,7 @@ class Boleto implements \JsonSerializable
     /**
      * @param \ctodobom\APInterPHP\Cobranca\Mora $mora
      */
-    public function setMora($mora) : Mora
+    public function setMora(Mora $mora)
     {
         $this->mora = $mora;
     }
