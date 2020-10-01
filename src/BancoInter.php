@@ -78,11 +78,11 @@ class BancoInter
         curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($curl, CURLOPT_HEADER, 1);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_SSLCERT, $this->certificateFile);
         curl_setopt($curl, CURLOPT_SSLKEY, $this->keyFile);
+        curl_setopt($curl, CURLOPT_CAPATH, "/etc/ssl/certs/");
         if ($this->keyPassword) {
             curl_setopt($curl, CURLOPT_KEYPASSWD, $this->keyPassword);
         }
@@ -111,27 +111,42 @@ class BancoInter
                 'Content-type: application/json'
             );
         }
+
+        $retry = 5;
+        while ($retry>0) {
+            $this->controllerInit($http_params);
+            curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL.$url);
+    
+            curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
+            curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($data));
+            
+            $curlReply = curl_exec($this->curl);
+            if (!$curlReply) {
+                $curl_error = curl_error($this->curl);
+            }
+            $http_code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
+            $header_size = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
+            curl_close($this->curl);
+            $this->curl = null;
+    
+            $reply = new \stdClass();
+            $reply->header = substr($curlReply, 0, $header_size);
+            $reply->body = substr($curlReply, $header_size);
+
+            if ($http_code == 503) {
+                $retry--;
+            } else {
+                $retry=0;
+            }
+        }
         
-        $this->controllerInit($http_params);
-        curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL.$url);
-
-        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($data));
+        if ($http_code == 0) {
+            throw new \Exception("Curl error: ".$curl_error);
+        }
         
-        $curlReply = curl_exec($this->curl);
-        $http_code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
-        $header_size = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
-        curl_close($this->curl);
-        $this->curl = null;
-
-        $reply = new \stdClass();
-        $reply->header = substr($curlReply, 0, $header_size);
-        $reply->body = substr($curlReply, $header_size);
-
         if ($http_code < 200 || $http_code > 299) {
             throw new BancoInterException("Erro HTTP ".$http_code, $http_code, $reply);
         }
-        
         return $reply;
     }
     
@@ -144,19 +159,36 @@ class BancoInter
             );
         }
         
-        $this->controllerInit($http_params);
-        curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL.$url);
-        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'GET');
+        $retry = 5;
+        while ($retry>0) {
+            $this->controllerInit($http_params);
+            curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL.$url);
+            curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'GET');
+            
+            $curlReply = curl_exec($this->curl);
+            if (!$curlReply) {
+                $curl_error = curl_error($this->curl);
+            }
+            $http_code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
+            $header_size = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
+            curl_close($this->curl);
+            $this->curl = null;
+            
+            $reply = new \stdClass();
+            $reply->header = substr($curlReply, 0, $header_size);
+            $reply->body = substr($curlReply, $header_size);
+            
+            if ($http_code == 503) {
+                $retry--;
+                sleep(5);
+            } else {
+                $retry=0;
+            }
+        }
         
-        $curlReply = curl_exec($this->curl);
-        $http_code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
-        $header_size = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
-        curl_close($this->curl);
-        $this->curl = null;
-        
-        $reply = new \stdClass();
-        $reply->header = substr($curlReply, 0, $header_size);
-        $reply->body = substr($curlReply, $header_size);
+        if ($http_code == 0) {
+            throw new \Exception("Curl error: ".$curl_error);
+        }
         
         if ($http_code < 200 || $http_code > 299) {
             throw new BancoInterException("Erro HTTP ".$http_code, $http_code, $reply);
