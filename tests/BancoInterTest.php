@@ -17,7 +17,7 @@ final class BancoInterTest extends TestCase
         $banco = new BancoInter("123456", "/tmp/inter.crt", "/tmp/inter.key");
         $this->assertInstanceOf(BancoInter::class, $banco);
         
-        $apiUrl = "https://mag.bancointer.com.br:8443";
+        $apiUrl = "https://apis.bancointer.com.br:8443";
         $banco->setApiBaseURL($apiUrl);
         $this->assertEquals($banco->getApiBaseURL(), $apiUrl);
 
