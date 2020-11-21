@@ -1,6 +1,8 @@
 <?php
 namespace ctodobom\APInterPHP\Cobranca;
 
+use ctodobom\APInterPHP\BancoInterValueSizeException;
+
 class Pagador implements \JsonSerializable
 {
     private $cnpjCpf = null;
@@ -20,6 +22,24 @@ class Pagador implements \JsonSerializable
     const PESSOA_FISICA = "FISICA";
     const PESSOA_JURIDICA = "JURIDICA";
 
+    /**
+     * Assert if value complies with size restriction
+     *
+     * @param  string $value
+     * @param  int    $size
+     * @param  bool   $exact
+     * @throws BancoInterValueSizeException
+     */
+    private static function assertSize(string $value, int $size, bool $exact = false)
+    {
+        if ($exact && mb_strlen($value, "8bit") != $size) {
+            throw new BancoInterValueSizeException($value, $size, true);
+        } elseif (!$exact && mb_strlen($value, "8bit") > $size) {
+            throw new BancoInterValueSizeException($value, $size, false);
+        }
+        return;
+    }
+    
     /**
      * @return mixed
      */
@@ -129,6 +149,7 @@ class Pagador implements \JsonSerializable
      */
     public function setCnpjCpf($cnpjCpf)
     {
+        static::assertSize($cnpjCpf, 15);
         $this->cnpjCpf = $cnpjCpf;
     }
 
@@ -137,6 +158,7 @@ class Pagador implements \JsonSerializable
      */
     public function setNome($nome)
     {
+        static::assertSize($nome, 100);
         $this->nome = $nome;
     }
 
@@ -145,6 +167,7 @@ class Pagador implements \JsonSerializable
      */
     public function setCep($cep)
     {
+        static::assertSize($cep, 8, true);
         $this->cep = $cep;
     }
 
@@ -153,6 +176,7 @@ class Pagador implements \JsonSerializable
      */
     public function setBairro($bairro)
     {
+        static::assertSize($bairro, 60);
         $this->bairro = $bairro;
     }
 
@@ -161,6 +185,7 @@ class Pagador implements \JsonSerializable
      */
     public function setEndereco($endereco)
     {
+        static::assertSize($endereco, 90);
         $this->endereco = $endereco;
     }
 
@@ -169,6 +194,7 @@ class Pagador implements \JsonSerializable
      */
     public function setNumero($numero)
     {
+        static::assertSize($numero, 10);
         $this->numero = $numero;
     }
 
@@ -177,6 +203,7 @@ class Pagador implements \JsonSerializable
      */
     public function setComplemento($complemento)
     {
+        static::assertSize($complemento, 30);
         $this->complemento = $complemento;
     }
 
@@ -185,6 +212,7 @@ class Pagador implements \JsonSerializable
      */
     public function setCidade($cidade)
     {
+        static::assertSize($cidade, 60);
         $this->cidade = $cidade;
     }
 
@@ -193,6 +221,7 @@ class Pagador implements \JsonSerializable
      */
     public function setUf($uf)
     {
+        static::assertSize($uf, 2, true);
         $this->uf = $uf;
     }
 
@@ -209,6 +238,7 @@ class Pagador implements \JsonSerializable
      */
     public function setEmail($email)
     {
+        static::assertSize($email, 50);
         $this->email = $email;
     }
 
@@ -217,6 +247,7 @@ class Pagador implements \JsonSerializable
      */
     public function setDdd($ddd)
     {
+        static::assertSize($ddd, 2, true);
         $this->ddd = $ddd;
     }
 
@@ -225,6 +256,7 @@ class Pagador implements \JsonSerializable
      */
     public function setTelefone($telefone)
     {
+        static::assertSize($telefone, 9);
         $this->telefone = $telefone;
     }
     

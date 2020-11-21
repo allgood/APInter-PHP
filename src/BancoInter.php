@@ -96,9 +96,9 @@ class BancoInter
 
     /**
      *
-     * @param string $url
-     * @param \JsonSerializable $data
-     * @param array $http_params
+     * @param  string            $url
+     * @param  \JsonSerializable $data
+     * @param  array             $http_params
      * @throws BancoInterException
      * @return \stdClass
      */
@@ -199,7 +199,8 @@ class BancoInter
     
     /**
      * Transmite um boleto para o Banco Inter
-     * @param Boleto $boleto Boleto a ser transmitido
+     *
+     * @param  Boleto $boleto Boleto a ser transmitido
      * @return Boleto
      */
     public function createBoleto(Boleto $boleto) : Boleto
@@ -220,7 +221,7 @@ class BancoInter
 
     /**
      *
-     * @param string $nossoNumero
+     * @param  string $nossoNumero
      * @return \stdClass
      */
     public function getBoleto(string $nossoNumero) : \stdClass
@@ -235,8 +236,8 @@ class BancoInter
     /**
      * Faz download do PDF do boleto
      *
-     * @param string $nossoNumero
-     * @param string $savePath Pasta a salvar o arquivo (default para a pasta de upload ou tmp)
+     * @param  string $nossoNumero
+     * @param  string $savePath    Pasta a salvar o arquivo (default para a pasta de upload ou tmp)
      * @throws BancoInterException
      * @return string Caminho completo do arquivo baixado
      */
@@ -275,12 +276,13 @@ class BancoInter
     /**
      * Retorna lista de boletos registrados no banco
      *
-     * @param string $dataInicial Data de vencimento inicial
-     * @param string $dataFinal Data de vencimento final
-     * @param number $pagina Página de resultado (default = 0)
-     * @param number $linhas Linhas de resultado (default = 20)
-     * @param string $filtro Filtro de resultado (default = "TODOS")
-     * @param string $ordem Ordem do resultado (default = "NOSSONUMERO")
+     * @param  string $dataInicial Data de vencimento inicial
+     * @param  string $dataFinal   Data de vencimento final
+     * @param  number $pagina      Página de resultado (default =
+     *                             0)
+     * @param  number $linhas      Linhas de resultado (default = 20)
+     * @param  string $filtro      Filtro de resultado (default = "TODOS")
+     * @param  string $ordem       Ordem do resultado (default = "NOSSONUMERO")
      * @return \stdClass
      */
     public function listaBoletos(
