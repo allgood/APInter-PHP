@@ -24,7 +24,6 @@
 		"phpunit/phpunit" : "^9.1",
 		"scrutinizer/ocular" : "^1.3",
 		"phpstan/phpstan" : "^0.12",
-		"nunomaduro/phpinsights" : "^1.14",
 		"fzaninotto/faker" : "^1.9"
 	},
 	"scripts" : {
