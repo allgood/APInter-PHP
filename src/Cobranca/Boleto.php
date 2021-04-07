@@ -248,7 +248,7 @@ class Boleto implements \JsonSerializable
     /**
      * @param \ctodobom\APInterPHP\Cobranca\Desconto $desconto1
      */
-    public function setDesconto1($desconto1) : Desconto
+    public function setDesconto1($desconto1)
     {
         $this->desconto1 = $desconto1;
     }
@@ -256,7 +256,7 @@ class Boleto implements \JsonSerializable
     /**
      * @param \ctodobom\APInterPHP\Cobranca\Desconto $desconto2
      */
-    public function setDesconto2($desconto2) : Desconto
+    public function setDesconto2($desconto2)
     {
         $this->desconto2 = $desconto2;
     }
@@ -264,7 +264,7 @@ class Boleto implements \JsonSerializable
     /**
      * @param \ctodobom\APInterPHP\Cobranca\Desconto $desconto3
      */
-    public function setDesconto3($desconto3) : Desconto
+    public function setDesconto3($desconto3)
     {
         $this->desconto3 = $desconto3;
     }
