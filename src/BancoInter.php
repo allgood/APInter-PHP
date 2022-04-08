@@ -4,36 +4,52 @@ namespace ctodobom\APInterPHP;
 use ctodobom\APInterPHP\Cobranca\Boleto;
 
 define("INTER_BAIXA_ACERTOS", "ACERTOS");
-define("INTER_BAIXA_PROTESTADO", "PROTESTADO");
+define("INTER_BAIXA_PEDIDOCLIENTE", "APEDIDODOCLIENTE");
 define("INTER_BAIXA_DEVOLUCAO", "DEVOLUCAO");
-define("INTER_BAIXA_SUBSTITUICAO", "SUBISTITUICAO");
+define("INTER_BAIXA_PAGO", "PAGODIRETOAOCLIENTE");
+define("INTER_BAIXA_SUBSTITUICAO", "SUBSTITUICAO");
 
-define("INTER_FILTRO_TODOS", "TODOS");
-define("INTER_FILTRO_VENCIDOSAVENCER", "VENCIDOSAVENCER");
-define("INTER_FILTRO_EXPIRADOS", "EXPIRADOS");
-define("INTER_FILTRO_PAGOS", "PAGOS");
-define("INTER_FILTRO_TODOSBAIXADOS", "TODOSBAIXADOS");
+// não mais suportados, usando string válida para evitar erros
+define("INTER_BAIXA_PROTESTADO", "ACERTOS");
 
+define("INTER_FILTRO_EXPIRADOS", "EXPIRADO");
+define("INTER_FILTRO_VENCIDO", "VENCIDO");
+define("INTER_FILTRO_EMABERTO", "EMABERTO");
+define("INTER_FILTRO_PAGOS", "PAGO");
+define("INTER_FILTRO_CANCELADO", "CANCELADO");
+
+// não mais suportados, usando string válida para evitar erros
+define("INTER_FILTRO_TODOS", null);
+define("INTER_FILTRO_TODOSBAIXADOS", "PAGO");
+define("INTER_FILTRO_VENCIDOSAVENCER", "EMABERTO");
+
+define("INTER_ORDEM_PAGADOR", null);
 define("INTER_ORDEM_NOSSONUMERO", "NOSSONUMERO");
 define("INTER_ORDEM_SEUNUMERO", "SEUNUMERO");
-define("INTER_ORDEM_VENCIMENTO", "DATAVENCIMENTO_ASC");
-define("INTER_ORDEM_VENCIMENTO_DESC", "DATAVENCIMENTO_DSC");
-define("INTER_ORDEM_NOMESACADO", "NOMESACADO");
-define("INTER_ORDEM_VALOR", "VALOR_ASC");
+define("INTER_ORDEM_PAGAMENTO", "DATA_PAGAMENTO");
+define("INTER_ORDEM_VENCIMENTO", "DATA_VENCIMENTO");
+define("INTER_ORDEM_VALOR", "VALOR");
+define("INTER_ORDEM_STATUS", "STATUS");
+
+// não mais suportados, usando string válida para evitar erros
+define("INTER_ORDEM_VENCIMENTO_DESC", "DATA_VENCIMENTO_DSC");
+define("INTER_ORDEM_NOMESACADO", "PAGADOR");
 define("INTER_ORDEM_VALOR_DESC", "VALOR_DSC");
-define("INTER_ORDEM_STATUS", "STATUS_ASC");
 define("INTER_ORDEM_STATUS_DESC", "STATUS_DSC");
 
 class BancoInter
 {
 
-    private $apiBaseURL = "https://apis.bancointer.com.br";
+    private $apiBaseURL = "https://cdpj.partners.bancointer.com.br";
     private $accountNumber = null;
     private $certificateFile = null;
     private $keyFile = null;
     private $keyPassword = null;
 
     private $curl = null;
+    
+    private $tokenRequest = null;
+    private $oAuthToken = null;
     
     /**
      * Get API Base URL
@@ -60,13 +76,48 @@ class BancoInter
         $this->keyPassword = $keyPassword;
     }
     
-    public function __construct(string $accountNumber, string $certificateFile, string $keyFile)
-    {
+    /**
+     *
+     * @param string $accountNumber
+     * @param string $certificateFile
+     * @param string $keyFile
+     * @param TokenRequest $tokenRequest
+     */
+    public function __construct(
+        string $accountNumber,
+        string $certificateFile,
+        string $keyFile,
+        TokenRequest $tokenRequest
+    ) {
         $this->accountNumber = $accountNumber;
         $this->certificateFile = $certificateFile;
         $this->keyFile = $keyFile;
+        $this->tokenRequest = $tokenRequest;
     }
 
+    /**
+     * Obtém o token oAuth
+     *
+     * @return string oAuth token
+     */
+    public function getOAuthToken()
+    {
+        return $this->oAuthToken;
+    }
+    
+    
+    /**
+     * Initialize oAuthToken
+     *
+     */
+    public function loadOAuthToken()
+    {
+        $reply = $this->controllerPost("/oauth/v2/token", $this->tokenRequest, null, false);
+
+        $replyData = json_decode($reply->body);
+        $this->oAuthToken = $replyData->access_token;
+    }
+    
     /**
      * Inicializa a conexão com a API
      *
@@ -88,7 +139,6 @@ class BancoInter
         }
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
 
-        $http_params[] = 'x-inter-conta-corrente: '.$this->accountNumber;
         curl_setopt($curl, CURLOPT_HTTPHEADER, $http_params);
         
         $this->curl = $curl;
@@ -96,29 +146,47 @@ class BancoInter
 
     /**
      *
-     * @param  string            $url
-     * @param  \JsonSerializable $data
-     * @param  array             $http_params
+     * @param string $url
+     * @param \JsonSerializable $data
+     * @param array $http_params
      * @throws BancoInterException
      * @return \stdClass
      */
-    public function controllerPost(string $url, \JsonSerializable $data, array $http_params = null)
-    {
+    public function controllerPost(
+        string $url,
+        \JsonSerializable $data,
+        array $http_params = null,
+        bool $postJson = true
+    ) {
 
         if ($http_params == null) {
             $http_params=array(
                 'accept: application/json',
-                'Content-type: application/json'
+                'Content-type: application/'.($postJson ? 'json' : 'x-www-form-urlencoded')
             );
         }
+        
+        if (!$this->oAuthToken && !($data instanceof TokenRequest)) {
+            $this->loadOAuthToken();
+        }
 
+        if ($this->oAuthToken) {
+            $http_params[]='Authorization: Bearer '.$this->oAuthToken;
+        }
+        
+        if ($postJson) {
+            $prepared_data = json_encode($data);
+        } else {
+            $prepared_data = http_build_query($data->jsonSerialize());
+        }
+             
         $retry = 5;
         while ($retry>0) {
             $this->controllerInit($http_params);
             curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL.$url);
     
             curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
-            curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($data));
+            curl_setopt($this->curl, CURLOPT_POSTFIELDS, $prepared_data);
             
             $curlReply = curl_exec($this->curl);
             if (!$curlReply) {
@@ -158,6 +226,12 @@ class BancoInter
                 'accept: application/json',
             );
         }
+
+        if (!$this->oAuthToken) {
+            $this->loadOAuthToken();
+        }
+        
+        $http_params[]='Authorization: Bearer '.$this->oAuthToken;
         
         $retry = 5;
         while ($retry>0) {
@@ -208,7 +282,7 @@ class BancoInter
         // garante que o boleto tem um controller
         $boleto->setController($this);
         
-        $reply = $this->controllerPost("/openbanking/v1/certificado/boletos", $boleto);
+        $reply = $this->controllerPost("/cobranca/v2/boletos", $boleto);
 
         $replyData = json_decode($reply->body);
         
@@ -226,7 +300,7 @@ class BancoInter
      */
     public function getBoleto(string $nossoNumero) : \stdClass
     {
-        $reply = $this->controllerGet("/openbanking/v1/certificado/boletos/".$nossoNumero);
+        $reply = $this->controllerGet("/cobranca/v2/boletos/".$nossoNumero);
 
         $replyData = json_decode($reply->body);
         
@@ -247,14 +321,11 @@ class BancoInter
             $savePath = ini_get('upload_tmp_dir') ? ini_get('upload_tmp_dir') : sys_get_temp_dir();
         }
         
-        $http_params=array(
-            'accept: application/pdf',
-        );
-
-        $reply = $this->controllerGet("/openbanking/v1/certificado/boletos/".$nossoNumero."/pdf", $http_params);
+        $reply = $this->controllerGet("/cobranca/v2/boletos/".$nossoNumero."/pdf");
 
         $filename = tempnam($savePath, "boleto-inter-").".pdf";
-        if (!file_put_contents($filename, base64_decode($reply->body))) {
+        
+        if (!file_put_contents($filename, base64_decode(json_decode($reply->body)->pdf))) {
             throw new BancoInterException("Erro decodificando e salvando PDF", 0, $reply);
         }
         
@@ -264,9 +335,9 @@ class BancoInter
     public function baixaBoleto(string $nossoNumero, string $motivo = "ACERTOS")
     {
         $data = new StdSerializable();
-        $data->codigoBaixa = $motivo;
+        $data->motivoCancelamento = $motivo;
         
-        $reply = $this->controllerPost("/openbanking/v1/certificado/boletos/".$nossoNumero."/baixas", $data);
+        $reply = $this->controllerPost("/cobranca/v2/boletos/".$nossoNumero."/cancelar", $data);
         
         $replyData = json_decode($reply->body);
         
@@ -290,17 +361,29 @@ class BancoInter
         string $dataFinal,
         $pagina = 0,
         $linhas = 20,
-        $filtro = "TODOS",
-        $ordem = "NOSSONUMERO"
+        $filtro = null,
+        $ordem = null,
+        $inverterOrdem = false
     ) : \stdClass {
 
-        $url = "/openbanking/v1/certificado/boletos";
-        $url .= "?filtrarPor=".$filtro;
-        $url .= "&dataInicial=".$dataInicial;
+        $url = "/cobranca/v2/boletos";
+        $url .= "?dataInicial=".$dataInicial;
         $url .= "&dataFinal=".$dataFinal;
-        $url .= "&ordenarPor=".$ordem;
-        $url .= "&page=".$pagina;
-        $url .= "&size=".$linhas;
+        if ($filtro) {
+            $url .= "&situacao=".$filtro;
+        }
+        if ($ordem) {
+            if (endsWith($ordem, '_DSC')) {
+                $ordem = str_replace('_DSC', '', $ordem);
+                $inverterOrdem = true;
+            }
+            $url .= "&ordenarPor=".$ordem;
+        }
+        if ($inverterOrdem) {
+            $url .= "&tipoOrdenacao=DESC";
+        }
+        $url .= "&paginaAtual=".$pagina;
+        $url .= "&itensPorPagina=".$linhas;
         
         $reply = $this->controllerGet($url);
         

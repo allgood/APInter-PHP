@@ -5,16 +5,16 @@ use ctodobom\APInterPHP\BancoInterValueSizeException;
 
 class Pagador implements \JsonSerializable
 {
-    private $cnpjCpf = null;
+    private $cpfCnpj = null;
+    private $tipoPessoa = null;
     private $nome = null;
-    private $cep = null;
-    private $bairro = null;
     private $endereco = null;
     private $numero = null;
     private $complemento = "";
+    private $bairro = null;
     private $cidade = null;
     private $uf = null;
-    private $tipoPessoa = null;
+    private $cep = null;
     private $email = "";
     private $ddd = "";
     private $telefone = "";
@@ -41,13 +41,24 @@ class Pagador implements \JsonSerializable
     }
     
     /**
+     * @deprecated Favor usar getCpfCnpj()
+     *
      * @return mixed
      */
     public function getCnpjCpf()
     {
-        return $this->cnpjCpf;
+        return $this->cpfCnpj;
     }
 
+    /**
+     *
+     * @return mixed
+     */
+    public function getCpfCnpj()
+    {
+        return $this->cpfCnpj;
+    }
+    
     /**
      * @return mixed
      */
@@ -145,14 +156,25 @@ class Pagador implements \JsonSerializable
     }
 
     /**
+     * @deprecated Favor usar setCpfCnpj()
+     *
      * @param mixed $cnpjCpf
      */
     public function setCnpjCpf($cnpjCpf)
     {
         static::assertSize($cnpjCpf, 15);
-        $this->cnpjCpf = $cnpjCpf;
+        $this->cpfCnpj = $cnpjCpf;
     }
 
+    /**
+     * @param mixed $cnpjCpf
+     */
+    public function setCpfCnpj($cnpjCpf)
+    {
+        static::assertSize($cnpjCpf, 15);
+        $this->cpfCnpj = $cnpjCpf;
+    }
+    
     /**
      * @param mixed $nome
      */

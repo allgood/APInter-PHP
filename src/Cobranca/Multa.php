@@ -5,9 +5,9 @@ class Multa implements \JsonSerializable
 {
 
     private $codigoMulta = "NAOTEMMULTA";
-    private $valor = 0.0;
-    private $taxa = 0.0;
     private $data = "";
+    private $taxa = 0.0;
+    private $valor = 0.0;
     
     const NAO_TEM_MULTA = 'NAOTEMMULTA';
     const VALOR_FIXO = 'VALORFIXO';

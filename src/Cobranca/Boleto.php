@@ -6,15 +6,12 @@ use ctodobom\APInterPHP\BancoInter;
 class Boleto implements \JsonSerializable
 {
 
-    private $dataEmissao = null;
     private $seuNumero = null;
-    private $dataLimite = "SESSENTA";
-    private $dataVencimento = null;
     private $valorNominal = 0.0;
     private $valorAbatimento = 0.0;
-    private $cnpjCPFBeneficiario = null;
-    private $numDiasAgenda = "SESSENTA";
-    
+    private $dataVencimento = null;
+    private $numDiasAgenda = 60;
+
     private $pagador = null;
     private $mensagem = null;
     private $desconto1 = null;
@@ -29,10 +26,15 @@ class Boleto implements \JsonSerializable
 
     private $controller = null;
     
-    const SESSENTA_DIAS = "SESSENTA";
-    const TRINTA_DIAS = "TRINTA";
+    private $dataEmissao = null;
+    private $dataLimite = "SESSENTA";
+    private $cnpjCPFBeneficiario = null;
+    
+    const SESSENTA_DIAS = 60;
+    const TRINTA_DIAS = 30;
     
     /**
+     * @deprecated Esse campo não é mais utilizado
      * @return mixed
      */
     public function getDataEmissao()
@@ -49,6 +51,7 @@ class Boleto implements \JsonSerializable
     }
 
     /**
+     * @deprecated Esse campo não é mais utilizado
      * @return string
      */
     public function getDataLimite()
@@ -81,6 +84,7 @@ class Boleto implements \JsonSerializable
     }
 
     /**
+     * @deprecated Esse campo não é mais utilizado
      * @return mixed
      */
     public function getCnpjCPFBeneficiario()
@@ -89,7 +93,7 @@ class Boleto implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getNumDiasAgenda()
     {
@@ -164,6 +168,7 @@ class Boleto implements \JsonSerializable
     }
     
     /**
+     * @deprecated Esse campo não é mais utilizado
      * @param mixed $dataEmissao
      */
     public function setDataEmissao($dataEmissao)
@@ -180,6 +185,7 @@ class Boleto implements \JsonSerializable
     }
 
     /**
+     * @deprecated Esse campo não é mais utilizado
      * @param string $dataLimite
      */
     public function setDataLimite($dataLimite)
@@ -212,6 +218,7 @@ class Boleto implements \JsonSerializable
     }
 
     /**
+     * @deprecated Esse campo não é mais utilizado
      * @param mixed $cnpjCPFBeneficiario
      */
     public function setCnpjCPFBeneficiario($cnpjCPFBeneficiario)
@@ -220,9 +227,9 @@ class Boleto implements \JsonSerializable
     }
 
     /**
-     * @param string $numDiasAgenda
+     * @param int $numDiasAgenda
      */
-    public function setNumDiasAgenda($numDiasAgenda)
+    public function setNumDiasAgenda(int $numDiasAgenda)
     {
         $this->numDiasAgenda = $numDiasAgenda;
     }

@@ -1,0 +1,7 @@
+/composer.phar
+/vendor/
+/private
+.env
+*~
+*.pdf
+/.settings

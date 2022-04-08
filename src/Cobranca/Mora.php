@@ -5,9 +5,9 @@ class Mora implements \JsonSerializable
 {
 
     private $codigoMora = "ISENTO";
-    private $valor = 0.0;
-    private $taxa = 0.0;
     private $data = "";
+    private $taxa = 0.0;
+    private $valor = 0.0;
     
     const ISENTO = 'ISENTO';
     const TAXA_MENSAL = 'TAXAMENSAL';

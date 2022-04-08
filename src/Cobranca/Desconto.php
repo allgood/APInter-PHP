@@ -5,9 +5,9 @@ class Desconto implements \JsonSerializable
 {
 
     private $codigoDesconto = "NAOTEMDESCONTO";
+    private $data = "";
     private $taxa = 0.0;
     private $valor = 0.0;
-    private $data = "";
     
     const NAO_TEM_DESCONTO = 'NAOTEMDESCONTO';
     const VALOR_FIXO = 'VALORFIXODATAINFORMADA';
