@@ -253,10 +253,11 @@ class BancoInter
 
         $reply = $this->controllerGet("/openbanking/v1/certificado/boletos/".$nossoNumero."/pdf", $http_params);
 
-        $filename = tempnam($savePath, "boleto-inter-").".pdf";
+        $filename = tempnam($savePath, "boleto-inter-");
         if (!file_put_contents($filename, base64_decode($reply->body))) {
             throw new BancoInterException("Erro decodificando e salvando PDF", 0, $reply);
         }
+        rename($filename, $filename .= ".pdf");
         
         return $filename;
     }
