@@ -7,11 +7,14 @@ use ctodobom\APInterPHP\BancoInterException;
 use ctodobom\APInterPHP\Cobranca\Boleto;
 use ctodobom\APInterPHP\Cobranca\Pagador;
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
 // dados do correntista
-$conta = "0000001";
-$cnpj = "12123123000112";
-$certificado = "/caminho/do/certificado.pem";
-$chavePrivada = "/caminho/da/chaveprivada.key";
+$conta = $_ENV['INTER_CONTA'];
+$cnpj = $_ENV['INTER_CNPJ'];
+$certificado = $_ENV['INTER_CERTIFICATE_PATH'];
+$chavePrivada = $_ENV['INTER_PRIVATE_KEY_PATH'];
 
 
 
@@ -28,10 +31,9 @@ $chavePrivada = "/caminho/da/chaveprivada.key";
 // alterados o script de exemplo não funcionará.
 
 
-
 // dados de teste
-$cpfPagador = "12312312312";
-$estadoPagador = "XX";
+$cpfPagador = $_ENV['PAGADOR_CPF'];
+$estadoPagador = $_ENV['PAGADOR_UF'];
 
 $banco = new BancoInter($conta, $certificado, $chavePrivada);
 
@@ -45,7 +47,7 @@ $pagador->setEndereco("Nome da rua");
 $pagador->setNumero(42);
 $pagador->setBairro("Centro");
 $pagador->setCidade("Cidade");
-$pagador->setCep("12345000");
+$pagador->setCep($_ENV['PAGADOR_CEP']);
 
 $pagador->setCnpjCpf($cpfPagador);
 $pagador->setUf($estadoPagador);
@@ -71,6 +73,8 @@ try {
     echo $e->reply->header;
     echo "\n\nConteúdo: \n";
     echo $e->reply->body;
+    echo "\n\n".$e->getTraceAsString();
+    die;
 }
 
 try {
@@ -83,6 +87,7 @@ try {
     echo $e->reply->header;
     echo "\n\nConteúdo: \n";
     echo $e->reply->body;
+    echo "\n\n".$e->getTraceAsString();
 }
 
 
@@ -96,6 +101,7 @@ try {
     echo $e->reply->header;
     echo "\n\nConteúdo: \n";
     echo $e->reply->body;
+    echo "\n\n".$e->getTraceAsString();
 }
 
 try {
@@ -108,6 +114,7 @@ try {
     echo $e->reply->header;
     echo "\n\nConteúdo: \n";
     echo $e->reply->body;
+    echo "\n\n".$e->getTraceAsString();
 }
 
 try {
@@ -120,6 +127,7 @@ try {
     echo $e->reply->header;
     echo "\n\nConteúdo: \n";
     echo $e->reply->body;
+    echo "\n\n".$e->getTraceAsString();
 }
 
 try {
