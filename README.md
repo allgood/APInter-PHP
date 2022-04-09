@@ -13,7 +13,7 @@ Como usar:
 Para utilizar a biblioteca através do composer:
 
 ```
-composer require ctodobom/api-inter:1.0.0
+composer require ctodobom/api-inter:1.0.1
 ```
 
 ### Documentação 
