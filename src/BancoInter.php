@@ -261,7 +261,31 @@ class BancoInter
         
         return $filename;
     }
-    
+
+    /**
+     * Faz download do PDF do boleto e retorna apenas o conteúdo binário
+     * codificado em string base64
+     *
+     * @param  string $nossoNumero
+     * @throws BancoInterException
+     * @return string Conteúdo do PDF codificado em string base64
+     */
+    public function getPdfBoletoBase64(string $nossoNumero) : string
+    {
+        $http_params = ['accept: application/pdf'];
+
+        $reply = $this->controllerGet(
+            "/openbanking/v1/certificado/boletos/$nossoNumero/pdf",
+            $http_params
+        );
+
+        if (!$reply->body) {
+            throw new BancoInterException("Erro ao receber o PDF", 0, $reply);
+        }
+
+        return $reply->body;
+    }
+
     public function baixaBoleto(string $nossoNumero, string $motivo = "ACERTOS")
     {
         $data = new StdSerializable();
