@@ -41,3 +41,10 @@ Se o código do projeto ajudou você em uma tarefa complexa, considere fazer uma
 ![image](https://user-images.githubusercontent.com/6070736/116247400-317e3680-a741-11eb-9434-9f226eec39b5.png)
 
 Chave Pix: 80fd8916-1131-4844-917e-2732eaa2ba74
+
+Propaganda do Autor:
+--------------------
+
+Não relacionado à essa biblioteca diretamente, mas fazendo uso da mesma API, desenvolvi um app para Android que emite e gerencia boletos do Banco Inter. A aplicação é de código fechado e com o objetivo de ser completamente grátis, mantida por publicidade.
+
+[Para instalar é só clicar aqui!](https://play.google.com/store/apps/details?id=dev.todobom.interbill)
