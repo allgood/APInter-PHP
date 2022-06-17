@@ -89,7 +89,7 @@ class Mensagem implements \JsonSerializable
         $this->linha5 = $linha5;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return get_object_vars($this);
     }
