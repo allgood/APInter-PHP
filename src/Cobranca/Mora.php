@@ -77,7 +77,7 @@ class Mora implements \JsonSerializable
         $this->data = $data;
     }
     
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return get_object_vars($this);
     }
