@@ -307,6 +307,7 @@ class BancoInter
      *                             0)
      * @param  number $linhas      Linhas de resultado (default = 20)
      * @param  string $filtro      Filtro de resultado (default = "TODOS")
+     * @param  string $filtroData  Filtro de resultado (default = "VENCIMENTO")
      * @param  string $ordem       Ordem do resultado (default = "NOSSONUMERO")
      * @return \stdClass
      */
@@ -316,11 +317,13 @@ class BancoInter
         $pagina = 0,
         $linhas = 20,
         $filtro = "TODOS",
+    	$filtroData = "VENCIMENTO", 
         $ordem = "NOSSONUMERO"
     ) : \stdClass {
 
         $url = "/openbanking/v1/certificado/boletos";
         $url .= "?filtrarPor=".$filtro;
+        $url .= "&filtrarDataPor=".$filtroData;
         $url .= "&dataInicial=".$dataInicial;
         $url .= "&dataFinal=".$dataFinal;
         $url .= "&ordenarPor=".$ordem;
