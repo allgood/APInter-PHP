@@ -260,7 +260,7 @@ class Pagador implements \JsonSerializable
         $this->telefone = $telefone;
     }
     
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return get_object_vars($this);
     }

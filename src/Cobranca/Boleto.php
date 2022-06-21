@@ -352,7 +352,7 @@ class Boleto implements \JsonSerializable
         $this->mora = new Mora();
     }
 
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return get_object_vars($this);
     }
