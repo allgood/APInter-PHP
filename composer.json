@@ -2,7 +2,7 @@
 	"name" : "ctodobom/api-inter",
 	"type" : "package",
 	"description" : "Acesso à API do Banco Inter",
-	"license" : "LGPL-3.0",
+	"license" : "LGPL-3.0-or-later",
 	"keywords" : [
 		"Banco Inter Intermedium Boletos Cobrança"
 	],
