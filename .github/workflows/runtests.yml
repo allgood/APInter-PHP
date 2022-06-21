@@ -12,13 +12,18 @@ permissions:
 jobs:
   build:
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         php-versions: ['7.3', '7.4', '8.0']
         
     steps:
     - uses: actions/checkout@v3
+    
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
@@ -33,10 +38,10 @@ jobs:
           ${{ runner.os }}-php-
 
     - name: Install dependencies
-      run: php-${{ matrix.php-versions }} composer install --prefer-dist --no-progress
+      run: composer install --prefer-dist --no-progress
 
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
 
     - name: Run test suite
-      run: php-${{ matrix.php-versions }} vendor/bin/phpunit tests
+      run: vendor/bin/phpunit tests
