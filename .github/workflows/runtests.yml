@@ -13,7 +13,10 @@ jobs:
   build:
 
     runs-on: ubuntu-20.04
-
+    strategy:
+      matrix:
+        php-versions: ['7.3', '7.4', '8.0']
+        
     steps:
     - uses: actions/checkout@v3
 
@@ -24,17 +27,16 @@ jobs:
       id: composer-cache
       uses: actions/cache@v3
       with:
-        php-version: 7.4
         path: vendor
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-php-
 
     - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
+      run: php-${{ matrix.php-versions }} composer install --prefer-dist --no-progress
 
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
 
     - name: Run test suite
-      run: vendor/bin/phpunit tests
+      run: php-${{ matrix.php-versions }} vendor/bin/phpunit tests
