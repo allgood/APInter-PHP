@@ -5,7 +5,7 @@ use ctodobom\APInterPHP\Cobranca\Boleto;
 
 define("INTER_BAIXA_ACERTOS", "ACERTOS");
 define("INTER_BAIXA_PEDIDOCLIENTE", "APEDIDODOCLIENTE");
-define("INTER_BAIXA_DEVOLUCAO", "DEVOLUCAO");
+define("INTER_BAIXA_DEVOLUCAO", "ACERTOS");
 define("INTER_BAIXA_PAGO", "PAGODIRETOAOCLIENTE");
 define("INTER_BAIXA_SUBSTITUICAO", "SUBSTITUICAO");
 
@@ -377,20 +377,13 @@ class BancoInter
      */
     public function getPdfBoletoBase64(string $nossoNumero) : string
     {
-        $http_params = [
-            'accept: application/pdf'
-        ];
-
-        $reply = $this->controllerGet(
-            "/cobranca/v2/boletos/$nossoNumero/pdf",
-            $http_params
-        );
+        $reply = $this->controllerGet("/cobranca/v2/boletos/$nossoNumero/pdf");
 
         if (!$reply->body) {
             throw new BancoInterException('Erro ao receber o PDF', 0, $reply);
         }
 
-        return json_decode($reply->body)-pdf;
+        return json_decode($reply->body)->pdf;
     }
 
     public function baixaBoleto(string $nossoNumero, string $motivo = "ACERTOS")
