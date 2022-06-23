@@ -12,6 +12,6 @@ class BancoInterException extends \Exception
         $this->http_code = $http_code;
         $this->reply = $reply;
         
-        parent::__construct($message, null, null);
+        parent::__construct($message, 0, null);
     }
 }

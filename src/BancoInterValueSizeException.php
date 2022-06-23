@@ -8,6 +8,6 @@ class BancoInterValueSizeException extends \Exception
     {
         $message = sprintf("'%s' must have %s %d characters", $value, ($exact?"":"up to"), $size);
         
-        parent::__construct($message, null, null);
+        parent::__construct($message, 0, null);
     }
 }
