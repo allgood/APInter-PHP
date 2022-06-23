@@ -356,11 +356,11 @@ class BancoInter
             $savePath = ini_get('upload_tmp_dir') ? ini_get('upload_tmp_dir') : sys_get_temp_dir();
         }
         
-        $reply = $this->controllerGet("/cobranca/v2/boletos/".$nossoNumero."/pdf");
+        $reply = $this->getPdfBoletoBase64($nossoNumero);
 
         $filename = tempnam($savePath, "boleto-inter-").".pdf";
         
-        if (!file_put_contents($filename, base64_decode(json_decode($reply->body)->pdf))) {
+        if (!file_put_contents($filename, base64_decode($reply))) {
             throw new BancoInterException("Erro decodificando e salvando PDF", 0, $reply);
         }
         
@@ -390,7 +390,7 @@ class BancoInter
             throw new BancoInterException('Erro ao receber o PDF', 0, $reply);
         }
 
-        return $reply->body;
+        return json_decode($reply->body)-pdf;
     }
 
     public function baixaBoleto(string $nossoNumero, string $motivo = "ACERTOS")
