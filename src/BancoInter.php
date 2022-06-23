@@ -50,6 +50,8 @@ class BancoInter
     
     private $tokenRequest = null;
     private $oAuthToken = null;
+    private $tokenExpiresIn = null;
+    private $tokenTimestamp = null;
     
     /**
      * Get API Base URL
@@ -82,17 +84,22 @@ class BancoInter
      * @param string $certificateFile
      * @param string $keyFile
      * @param TokenRequest $tokenRequest
+     * @param array $oAuthTokenData
      */
     public function __construct(
         string $accountNumber,
         string $certificateFile,
         string $keyFile,
-        TokenRequest $tokenRequest
+        TokenRequest $tokenRequest,
+        array $oAuthTokenData = null
     ) {
         $this->accountNumber = $accountNumber;
         $this->certificateFile = $certificateFile;
         $this->keyFile = $keyFile;
         $this->tokenRequest = $tokenRequest;
+        if ($oAuthTokenData) {
+            $this->importOAuthToken($oAuthTokenData);
+        }
     }
 
     /**
@@ -105,17 +112,47 @@ class BancoInter
         return $this->oAuthToken;
     }
     
+    /**
+     * return current oAuthToken data
+     *
+     * @return []
+     */
+    public function exportOAuthToken()
+    {
+        $this->checkOauthToken();
+        return([
+            "access_token" => $this->oAuthToken,
+            "expires_in" => $this->tokenExpiresIn,
+            "timestamp" => $this->tokenTimestamp
+        ]);
+    }
     
     /**
-     * Initialize oAuthToken
+     * import oAuthToken data
+     *
+     * @param [] $tokenData
+     */
+    private function importOAuthToken($tokenData)
+    {
+        $this->oAuthToken = $tokenData["access_token"];
+        $this->tokenExpiresIn = $tokenData["expires_in"];
+        $this->tokenTimestamp = $tokenData["timestamp"];
+    }
+    
+    /**
+     * Check if have oAuthToken, or if it is expired, and request one if needed
      *
      */
-    public function loadOAuthToken()
+    private function checkOAuthToken()
     {
-        $reply = $this->controllerPost("/oauth/v2/token", $this->tokenRequest, null, false);
-
-        $replyData = json_decode($reply->body);
-        $this->oAuthToken = $replyData->access_token;
+        if (!$this->oAuthToken || $this->tokenTimestamp+$this->tokenExpiresIn > time()-10) {
+            $reply = $this->controllerPost("/oauth/v2/token", $this->tokenRequest, null, false);
+            
+            $replyData = json_decode($reply->body);
+            $this->oAuthToken = $replyData->access_token;
+            $this->tokenExpiresIn = $replyData->expires_in;
+            $this->tokenTimestamp = time();
+        }
     }
     
     /**
@@ -166,8 +203,8 @@ class BancoInter
             );
         }
         
-        if (!$this->oAuthToken && !($data instanceof TokenRequest)) {
-            $this->loadOAuthToken();
+        if (!($data instanceof TokenRequest)) {
+            $this->checkOAuthToken();
         }
 
         if ($this->oAuthToken) {
@@ -227,9 +264,7 @@ class BancoInter
             );
         }
 
-        if (!$this->oAuthToken) {
-            $this->loadOAuthToken();
-        }
+        $this->checkOAuthToken();
         
         $http_params[]='Authorization: Bearer '.$this->oAuthToken;
         
