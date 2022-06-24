@@ -1,4 +1,5 @@
 <?php
+
 namespace ctodobom\APInterPHP;
 
 use ctodobom\APInterPHP\Cobranca\Boleto;
@@ -26,7 +27,6 @@ define("INTER_ORDEM_STATUS_DESC", "STATUS_DSC");
 
 class BancoInter
 {
-
     private $apiBaseURL = "https://apis.bancointer.com.br";
     private $accountNumber = null;
     private $certificateFile = null;
@@ -34,7 +34,7 @@ class BancoInter
     private $keyPassword = null;
 
     private $curl = null;
-    
+
     /**
      * Get API Base URL
      *
@@ -59,7 +59,7 @@ class BancoInter
     {
         $this->keyPassword = $keyPassword;
     }
-    
+
     public function __construct(string $accountNumber, string $certificateFile, string $keyFile)
     {
         $this->accountNumber = $accountNumber;
@@ -88,9 +88,9 @@ class BancoInter
         }
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
 
-        $http_params[] = 'x-inter-conta-corrente: '.$this->accountNumber;
+        $http_params[] = 'x-inter-conta-corrente: ' . $this->accountNumber;
         curl_setopt($curl, CURLOPT_HTTPHEADER, $http_params);
-        
+
         $this->curl = $curl;
     }
 
@@ -106,20 +106,20 @@ class BancoInter
     {
 
         if ($http_params == null) {
-            $http_params=array(
+            $http_params = array(
                 'accept: application/json',
                 'Content-type: application/json'
             );
         }
 
         $retry = 5;
-        while ($retry>0) {
+        while ($retry > 0) {
             $this->controllerInit($http_params);
-            curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL.$url);
-    
+            curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL . $url);
+
             curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
             curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($data));
-            
+
             $curlReply = curl_exec($this->curl);
             if (!$curlReply) {
                 $curl_error = curl_error($this->curl);
@@ -128,7 +128,7 @@ class BancoInter
             $header_size = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
             curl_close($this->curl);
             $this->curl = null;
-    
+
             $reply = new \stdClass();
             $reply->header = substr($curlReply, 0, $header_size);
             $reply->body = substr($curlReply, $header_size);
@@ -136,35 +136,35 @@ class BancoInter
             if ($http_code == 503) {
                 $retry--;
             } else {
-                $retry=0;
+                $retry = 0;
             }
         }
-        
+
         if ($http_code == 0) {
-            throw new \Exception("Curl error: ".$curl_error);
+            throw new \Exception("Curl error: " . $curl_error);
         }
-        
+
         if ($http_code < 200 || $http_code > 299) {
-            throw new BancoInterException("Erro HTTP ".$http_code, $http_code, $reply);
+            throw new BancoInterException("Erro HTTP " . $http_code, $http_code, $reply);
         }
         return $reply;
     }
-    
+
     public function controllerGet(string $url, array $http_params = null)
     {
-        
+
         if ($http_params == null) {
-            $http_params=array(
+            $http_params = array(
                 'accept: application/json',
             );
         }
-        
+
         $retry = 5;
-        while ($retry>0) {
+        while ($retry > 0) {
             $this->controllerInit($http_params);
-            curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL.$url);
+            curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL . $url);
             curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'GET');
-            
+
             $curlReply = curl_exec($this->curl);
             if (!$curlReply) {
                 $curl_error = curl_error($this->curl);
@@ -173,49 +173,49 @@ class BancoInter
             $header_size = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
             curl_close($this->curl);
             $this->curl = null;
-            
+
             $reply = new \stdClass();
             $reply->header = substr($curlReply, 0, $header_size);
             $reply->body = substr($curlReply, $header_size);
-            
+
             if ($http_code == 503) {
                 $retry--;
                 sleep(5);
             } else {
-                $retry=0;
+                $retry = 0;
             }
         }
-        
+
         if ($http_code == 0) {
-            throw new \Exception("Curl error: ".$curl_error);
+            throw new \Exception("Curl error: " . $curl_error);
         }
-        
+
         if ($http_code < 200 || $http_code > 299) {
-            throw new BancoInterException("Erro HTTP ".$http_code, $http_code, $reply);
+            throw new BancoInterException("Erro HTTP " . $http_code, $http_code, $reply);
         }
-        
+
         return $reply;
     }
-    
+
     /**
      * Transmite um boleto para o Banco Inter
      *
      * @param  Boleto $boleto Boleto a ser transmitido
      * @return Boleto
      */
-    public function createBoleto(Boleto $boleto) : Boleto
+    public function createBoleto(Boleto $boleto): Boleto
     {
         // garante que o boleto tem um controller
         $boleto->setController($this);
-        
+
         $reply = $this->controllerPost("/openbanking/v1/certificado/boletos", $boleto);
 
         $replyData = json_decode($reply->body);
-        
+
         $boleto->setNossoNumero($replyData->nossoNumero);
         $boleto->setCodigoBarras($replyData->codigoBarras);
         $boleto->setLinhaDigitavel($replyData->linhaDigitavel);
-        
+
         return $boleto;
     }
 
@@ -224,12 +224,12 @@ class BancoInter
      * @param  string $nossoNumero
      * @return \stdClass
      */
-    public function getBoleto(string $nossoNumero) : \stdClass
+    public function getBoleto(string $nossoNumero): \stdClass
     {
-        $reply = $this->controllerGet("/openbanking/v1/certificado/boletos/".$nossoNumero);
+        $reply = $this->controllerGet("/openbanking/v1/certificado/boletos/" . $nossoNumero);
 
         $replyData = json_decode($reply->body);
-        
+
         return $replyData;
     }
 
@@ -241,24 +241,24 @@ class BancoInter
      * @throws BancoInterException
      * @return string Caminho completo do arquivo baixado
      */
-    public function getPdfBoleto(string $nossoNumero, string $savePath = null) : string
+    public function getPdfBoleto(string $nossoNumero, string $savePath = null): string
     {
         if ($savePath == null) {
             $savePath = ini_get('upload_tmp_dir') ? ini_get('upload_tmp_dir') : sys_get_temp_dir();
         }
-        
-        $http_params=array(
+
+        $http_params = array(
             'accept: application/pdf',
         );
 
-        $reply = $this->controllerGet("/openbanking/v1/certificado/boletos/".$nossoNumero."/pdf", $http_params);
+        $reply = $this->controllerGet("/openbanking/v1/certificado/boletos/" . $nossoNumero . "/pdf", $http_params);
 
         $filename = tempnam($savePath, "boleto-inter-");
         if (!file_put_contents($filename, base64_decode($reply->body))) {
             throw new BancoInterException("Erro decodificando e salvando PDF", 0, $reply);
         }
         rename($filename, $filename .= ".pdf");
-        
+
         return $filename;
     }
 
@@ -270,7 +270,7 @@ class BancoInter
      * @throws BancoInterException
      * @return string Conteúdo do PDF codificado em string base64
      */
-    public function getPdfBoletoBase64(string $nossoNumero) : string
+    public function getPdfBoletoBase64(string $nossoNumero): string
     {
         $http_params = ['accept: application/pdf'];
 
@@ -290,14 +290,14 @@ class BancoInter
     {
         $data = new StdSerializable();
         $data->codigoBaixa = $motivo;
-        
-        $reply = $this->controllerPost("/openbanking/v1/certificado/boletos/".$nossoNumero."/baixas", $data);
-        
+
+        $reply = $this->controllerPost("/openbanking/v1/certificado/boletos/" . $nossoNumero . "/baixas", $data);
+
         $replyData = json_decode($reply->body);
-        
+
         return $replyData;
     }
-    
+
     /**
      * Retorna lista de boletos registrados no banco
      *
@@ -317,20 +317,20 @@ class BancoInter
         $linhas = 20,
         $filtro = "TODOS",
         $ordem = "NOSSONUMERO"
-    ) : \stdClass {
+    ): \stdClass {
 
         $url = "/openbanking/v1/certificado/boletos";
-        $url .= "?filtrarPor=".$filtro;
-        $url .= "&dataInicial=".$dataInicial;
-        $url .= "&dataFinal=".$dataFinal;
-        $url .= "&ordenarPor=".$ordem;
-        $url .= "&page=".$pagina;
-        $url .= "&size=".$linhas;
-        
+        $url .= "?filtrarPor=" . $filtro;
+        $url .= "&dataInicial=" . $dataInicial;
+        $url .= "&dataFinal=" . $dataFinal;
+        $url .= "&ordenarPor=" . $ordem;
+        $url .= "&page=" . $pagina;
+        $url .= "&size=" . $linhas;
+
         $reply = $this->controllerGet($url);
-        
+
         $replyData = json_decode($reply->body);
-        
+
         return $replyData;
     }
 }

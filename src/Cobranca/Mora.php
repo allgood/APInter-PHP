@@ -1,17 +1,17 @@
 <?php
+
 namespace ctodobom\APInterPHP\Cobranca;
 
 class Mora implements \JsonSerializable
 {
-
     private $codigoMora = "ISENTO";
     private $valor = 0.0;
     private $taxa = 0.0;
     private $data = "";
-    
-    const ISENTO = 'ISENTO';
-    const TAXA_MENSAL = 'TAXAMENSAL';
-    const VALOR_POR_DIA = 'VALORDIA';
+
+    public const ISENTO = 'ISENTO';
+    public const TAXA_MENSAL = 'TAXAMENSAL';
+    public const VALOR_POR_DIA = 'VALORDIA';
 
     /**
      * @return string
@@ -44,7 +44,7 @@ class Mora implements \JsonSerializable
     {
         return $this->data;
     }
-    
+
     /**
      * @param string $codigoMora
      */
@@ -76,7 +76,7 @@ class Mora implements \JsonSerializable
     {
         $this->data = $data;
     }
-    
+
     public function jsonSerialize(): array
     {
         return get_object_vars($this);

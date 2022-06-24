@@ -1,11 +1,11 @@
 <?php
+
 namespace ctodobom\APInterPHP\Cobranca;
 
 use ctodobom\APInterPHP\BancoInter;
 
 class Boleto implements \JsonSerializable
 {
-
     private $dataEmissao = null;
     private $seuNumero = null;
     private $dataLimite = "SESSENTA";
@@ -14,7 +14,7 @@ class Boleto implements \JsonSerializable
     private $valorAbatimento = 0.0;
     private $cnpjCPFBeneficiario = null;
     private $numDiasAgenda = "SESSENTA";
-    
+
     private $pagador = null;
     private $mensagem = null;
     private $desconto1 = null;
@@ -22,16 +22,16 @@ class Boleto implements \JsonSerializable
     private $desconto3 = null;
     private $multa = null;
     private $mora = null;
-    
+
     private $nossoNumero = null;
     private $codigoBarras = null;
     private $linhaDigitavel = null;
 
     private $controller = null;
-    
-    const SESSENTA_DIAS = "SESSENTA";
-    const TRINTA_DIAS = "TRINTA";
-    
+
+    public const SESSENTA_DIAS = "SESSENTA";
+    public const TRINTA_DIAS = "TRINTA";
+
     /**
      * @return mixed
      */
@@ -100,7 +100,7 @@ class Boleto implements \JsonSerializable
      *
      * @return Pagador
      */
-    public function getPagador() : Pagador
+    public function getPagador(): Pagador
     {
         return $this->pagador;
     }
@@ -109,7 +109,7 @@ class Boleto implements \JsonSerializable
      *
      * @return Mensagem
      */
-    public function getMensagem() : Mensagem
+    public function getMensagem(): Mensagem
     {
         return $this->mensagem;
     }
@@ -117,7 +117,7 @@ class Boleto implements \JsonSerializable
     /**
      * @return Desconto
      */
-    public function getDesconto1() : Desconto
+    public function getDesconto1(): Desconto
     {
         return $this->desconto1;
     }
@@ -125,7 +125,7 @@ class Boleto implements \JsonSerializable
     /**
      * @return Desconto
      */
-    public function getDesconto2() : Desconto
+    public function getDesconto2(): Desconto
     {
         return $this->desconto2;
     }
@@ -133,7 +133,7 @@ class Boleto implements \JsonSerializable
     /**
      * @return Desconto
      */
-    public function getDesconto3() : Desconto
+    public function getDesconto3(): Desconto
     {
         return $this->desconto3;
     }
@@ -141,7 +141,7 @@ class Boleto implements \JsonSerializable
     /**
      * @return \ctodobom\APInterPHP\Cobranca\Multa
      */
-    public function getMulta() : Multa
+    public function getMulta(): Multa
     {
         return $this->multa;
     }
@@ -149,7 +149,7 @@ class Boleto implements \JsonSerializable
     /**
      * @return \ctodobom\APInterPHP\Cobranca\Mora
      */
-    public function getMora() : Mora
+    public function getMora(): Mora
     {
         return $this->mora;
     }
@@ -158,11 +158,11 @@ class Boleto implements \JsonSerializable
      *
      * @return BancoInter
      */
-    public function getController() : BancoInter
+    public function getController(): BancoInter
     {
         return $this->controller;
     }
-    
+
     /**
      * @param mixed $dataEmissao
      */
@@ -341,7 +341,7 @@ class Boleto implements \JsonSerializable
     {
         $this->controller = $controller;
     }
-    
+
     public function __construct()
     {
         $this->mensagem = new Mensagem();

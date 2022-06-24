@@ -1,4 +1,5 @@
 <?php
+
 namespace ctodobom\APInterPHP\Cobranca;
 
 use ctodobom\APInterPHP\BancoInterValueSizeException;
@@ -19,8 +20,8 @@ class Pagador implements \JsonSerializable
     private $ddd = "";
     private $telefone = "";
 
-    const PESSOA_FISICA = "FISICA";
-    const PESSOA_JURIDICA = "JURIDICA";
+    public const PESSOA_FISICA = "FISICA";
+    public const PESSOA_JURIDICA = "JURIDICA";
 
     /**
      * Assert if value complies with size restriction
@@ -39,7 +40,7 @@ class Pagador implements \JsonSerializable
         }
         return;
     }
-    
+
     /**
      * @return mixed
      */
@@ -259,7 +260,7 @@ class Pagador implements \JsonSerializable
         static::assertSize($telefone, 9);
         $this->telefone = $telefone;
     }
-    
+
     public function jsonSerialize(): array
     {
         return get_object_vars($this);
