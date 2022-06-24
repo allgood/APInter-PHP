@@ -5,6 +5,15 @@ Projeto com o início de uma biblioteca para a utilização das API fornecidas p
 
 Inicialmente apenas a criação de boletos é suportada.
 
+⚠️ ATENÇÃO
+----------
+
+O Banco Inter está encerrando o suporte à primeira versão da API, já não permitindo mais a emissão de chaves e certificados para uso dela, como os certificados expiram após um ano, em breve ninguém mais conseguirá acessá-la.
+
+A branch com o nome "master" está sendo descontinuada a partir desse ponto, pull requests não serão aceitos e apenas erros muito críticos serão resolvidos nessa branch.
+
+A nova branch terá o nome de "main" e será a principal, a versão do pacote do composer vai para a versão 2.
+
 Como usar:
 ----------
 
@@ -13,7 +22,7 @@ Como usar:
 Para utilizar a biblioteca através do composer:
 
 ```
-composer require ctodobom/api-inter:1.0.1
+composer require ctodobom/api-inter:1.0.2
 ```
 
 ### Documentação 
