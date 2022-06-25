@@ -22,7 +22,7 @@ Como usar:
 Para utilizar a biblioteca através do composer:
 
 ```
-composer require ctodobom/api-inter:1.0.2
+composer require ctodobom/api-inter:1.0.3
 ```
 
 ### Documentação 

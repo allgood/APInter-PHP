@@ -10,7 +10,7 @@ namespace ctodobom\APInterPHP;
  */
 class StdSerializable extends \stdClass implements \JsonSerializable
 {
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return get_object_vars($this);
     }
