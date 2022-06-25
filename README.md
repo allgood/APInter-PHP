@@ -5,11 +5,6 @@ Projeto com o início de uma biblioteca para a utilização das API fornecidas p
 
 Inicialmente apenas a criação de boletos é suportada.
 
-⚠️ ATENÇÃO - BRANCH api2 considerada instável
---------------------------------------------
-
-A branch api2 no momento está instável, se utilizar buscar o commit 29adc8b, que é o mais recente considerável estável
-
 Como usar:
 ----------
 
@@ -17,8 +12,16 @@ Como usar:
 
 Para utilizar a biblioteca através do composer:
 
+#### Versão estável
+
 ```
-composer require ctodobom/api-inter:1.0.3
+composer require "ctodobom/api-inter:2.*"
+```
+
+#### Versão de desenvolvimento principal
+
+```
+composer require ctodobom/api-inter:dev-main
 ```
 
 ### Documentação 
