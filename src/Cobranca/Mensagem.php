@@ -1,4 +1,5 @@
 <?php
+
 namespace ctodobom\APInterPHP\Cobranca;
 
 class Mensagem implements \JsonSerializable
@@ -8,7 +9,7 @@ class Mensagem implements \JsonSerializable
     private $linha3 = "";
     private $linha4 = "";
     private $linha5 = "";
-    
+
     /**
      * @return string
      */
@@ -89,7 +90,7 @@ class Mensagem implements \JsonSerializable
         $this->linha5 = $linha5;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return get_object_vars($this);
     }
