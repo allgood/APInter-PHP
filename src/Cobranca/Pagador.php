@@ -59,7 +59,7 @@ class Pagador implements \JsonSerializable
     {
         return $this->cpfCnpj;
     }
-    
+
     /**
      * @return mixed
      */
@@ -175,7 +175,7 @@ class Pagador implements \JsonSerializable
         static::assertSize($cnpjCpf, 15);
         $this->cpfCnpj = $cnpjCpf;
     }
-    
+
     /**
      * @param mixed $nome
      */

@@ -1,4 +1,5 @@
 <?php
+
 namespace ctodobom\APInterPHP;
 
 use ctodobom\APInterPHP\Cobranca\Boleto;
@@ -39,7 +40,6 @@ define("INTER_ORDEM_STATUS_DESC", "STATUS_DSC");
 
 class BancoInter
 {
-
     private $apiBaseURL = "https://cdpj.partners.bancointer.com.br";
     private $accountNumber = null;
     private $certificateFile = null;
@@ -47,12 +47,12 @@ class BancoInter
     private $keyPassword = null;
 
     private $curl = null;
-    
+
     private $tokenRequest = null;
     private $oAuthToken = null;
     private $tokenExpiresIn = null;
     private $tokenTimestamp = null;
-    
+
     /**
      * Get API Base URL
      *
@@ -77,7 +77,7 @@ class BancoInter
     {
         $this->keyPassword = $keyPassword;
     }
-    
+
     /**
      *
      * @param string $accountNumber
@@ -111,7 +111,7 @@ class BancoInter
     {
         return $this->oAuthToken;
     }
-    
+
     /**
      * return current oAuthToken data
      *
@@ -126,7 +126,7 @@ class BancoInter
             "timestamp" => $this->tokenTimestamp
         ]);
     }
-    
+
     /**
      * import oAuthToken data
      *
@@ -138,23 +138,23 @@ class BancoInter
         $this->tokenExpiresIn = $tokenData["expires_in"];
         $this->tokenTimestamp = $tokenData["timestamp"];
     }
-    
+
     /**
      * Check if have oAuthToken, or if it is expired, and request one if needed
      *
      */
     private function checkOAuthToken()
     {
-        if (!$this->oAuthToken || $this->tokenTimestamp+$this->tokenExpiresIn > time()-10) {
+        if (!$this->oAuthToken || $this->tokenTimestamp + $this->tokenExpiresIn > time() - 10) {
             $reply = $this->controllerPost("/oauth/v2/token", $this->tokenRequest, null, false);
-            
+
             $replyData = json_decode($reply->body);
             $this->oAuthToken = $replyData->access_token;
             $this->tokenExpiresIn = $replyData->expires_in;
             $this->tokenTimestamp = time();
         }
     }
-    
+
     /**
      * Inicializa a conexão com a API
      *
@@ -177,7 +177,7 @@ class BancoInter
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
 
         curl_setopt($curl, CURLOPT_HTTPHEADER, $http_params);
-        
+
         $this->curl = $curl;
     }
 
@@ -197,34 +197,34 @@ class BancoInter
     ) {
 
         if ($http_params == null) {
-            $http_params=array(
+            $http_params = array(
                 'accept: application/json',
-                'Content-type: application/'.($postJson ? 'json' : 'x-www-form-urlencoded')
+                'Content-type: application/' . ($postJson ? 'json' : 'x-www-form-urlencoded')
             );
         }
-        
+
         if (!($data instanceof TokenRequest)) {
             $this->checkOAuthToken();
         }
 
         if ($this->oAuthToken) {
-            $http_params[]='Authorization: Bearer '.$this->oAuthToken;
+            $http_params[] = 'Authorization: Bearer ' . $this->oAuthToken;
         }
-        
+
         if ($postJson) {
             $prepared_data = json_encode($data);
         } else {
             $prepared_data = http_build_query($data->jsonSerialize());
         }
-             
+
         $retry = 5;
-        while ($retry>0) {
+        while ($retry > 0) {
             $this->controllerInit($http_params);
-            curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL.$url);
-    
+            curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL . $url);
+
             curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
             curl_setopt($this->curl, CURLOPT_POSTFIELDS, $prepared_data);
-            
+
             $curlReply = curl_exec($this->curl);
             if (!$curlReply) {
                 $curl_error = curl_error($this->curl);
@@ -233,7 +233,7 @@ class BancoInter
             $header_size = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
             curl_close($this->curl);
             $this->curl = null;
-    
+
             $reply = new \stdClass();
             $reply->header = substr($curlReply, 0, $header_size);
             $reply->body = substr($curlReply, $header_size);
@@ -241,39 +241,39 @@ class BancoInter
             if ($http_code == 503) {
                 $retry--;
             } else {
-                $retry=0;
+                $retry = 0;
             }
         }
-        
+
         if ($http_code == 0) {
-            throw new \Exception("Curl error: ".$curl_error);
+            throw new \Exception("Curl error: " . $curl_error);
         }
-        
+
         if ($http_code < 200 || $http_code > 299) {
-            throw new BancoInterException("Erro HTTP ".$http_code, $http_code, $reply);
+            throw new BancoInterException("Erro HTTP " . $http_code, $http_code, $reply);
         }
         return $reply;
     }
-    
+
     public function controllerGet(string $url, array $http_params = null)
     {
-        
+
         if ($http_params == null) {
-            $http_params=array(
+            $http_params = array(
                 'accept: application/json',
             );
         }
 
         $this->checkOAuthToken();
-        
-        $http_params[]='Authorization: Bearer '.$this->oAuthToken;
-        
+
+        $http_params[] = 'Authorization: Bearer ' . $this->oAuthToken;
+
         $retry = 5;
-        while ($retry>0) {
+        while ($retry > 0) {
             $this->controllerInit($http_params);
-            curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL.$url);
+            curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL . $url);
             curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'GET');
-            
+
             $curlReply = curl_exec($this->curl);
             if (!$curlReply) {
                 $curl_error = curl_error($this->curl);
@@ -282,49 +282,49 @@ class BancoInter
             $header_size = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
             curl_close($this->curl);
             $this->curl = null;
-            
+
             $reply = new \stdClass();
             $reply->header = substr($curlReply, 0, $header_size);
             $reply->body = substr($curlReply, $header_size);
-            
+
             if ($http_code == 503) {
                 $retry--;
                 sleep(5);
             } else {
-                $retry=0;
+                $retry = 0;
             }
         }
-        
+
         if ($http_code == 0) {
-            throw new \Exception("Curl error: ".$curl_error);
+            throw new \Exception("Curl error: " . $curl_error);
         }
-        
+
         if ($http_code < 200 || $http_code > 299) {
-            throw new BancoInterException("Erro HTTP ".$http_code, $http_code, $reply);
+            throw new BancoInterException("Erro HTTP " . $http_code, $http_code, $reply);
         }
-        
+
         return $reply;
     }
-    
+
     /**
      * Transmite um boleto para o Banco Inter
      *
      * @param  Boleto $boleto Boleto a ser transmitido
      * @return Boleto
      */
-    public function createBoleto(Boleto $boleto) : Boleto
+    public function createBoleto(Boleto $boleto): Boleto
     {
         // garante que o boleto tem um controller
         $boleto->setController($this);
-        
+
         $reply = $this->controllerPost("/cobranca/v2/boletos", $boleto);
 
         $replyData = json_decode($reply->body);
-        
+
         $boleto->setNossoNumero($replyData->nossoNumero);
         $boleto->setCodigoBarras($replyData->codigoBarras);
         $boleto->setLinhaDigitavel($replyData->linhaDigitavel);
-        
+
         return $boleto;
     }
 
@@ -333,12 +333,12 @@ class BancoInter
      * @param  string $nossoNumero
      * @return \stdClass
      */
-    public function getBoleto(string $nossoNumero) : \stdClass
+    public function getBoleto(string $nossoNumero): \stdClass
     {
-        $reply = $this->controllerGet("/cobranca/v2/boletos/".$nossoNumero);
+        $reply = $this->controllerGet("/cobranca/v2/boletos/" . $nossoNumero);
 
         $replyData = json_decode($reply->body);
-        
+
         return $replyData;
     }
 
@@ -350,20 +350,20 @@ class BancoInter
      * @throws BancoInterException
      * @return string Caminho completo do arquivo baixado
      */
-    public function getPdfBoleto(string $nossoNumero, string $savePath = null) : string
+    public function getPdfBoleto(string $nossoNumero, string $savePath = null): string
     {
         if ($savePath == null) {
             $savePath = ini_get('upload_tmp_dir') ? ini_get('upload_tmp_dir') : sys_get_temp_dir();
         }
-        
+
         $reply = $this->getPdfBoletoBase64($nossoNumero);
 
-        $filename = tempnam($savePath, "boleto-inter-").".pdf";
-        
+        $filename = tempnam($savePath, "boleto-inter-") . ".pdf";
+
         if (!file_put_contents($filename, base64_decode($reply))) {
             throw new BancoInterException("Erro decodificando e salvando PDF", 0, $reply);
         }
-        
+
         return $filename;
     }
 
@@ -375,7 +375,7 @@ class BancoInter
      * @throws BancoInterException
      * @return string Conteúdo do PDF codificado em string base64
      */
-    public function getPdfBoletoBase64(string $nossoNumero) : string
+    public function getPdfBoletoBase64(string $nossoNumero): string
     {
         $reply = $this->controllerGet("/cobranca/v2/boletos/$nossoNumero/pdf");
 
@@ -390,14 +390,14 @@ class BancoInter
     {
         $data = new StdSerializable();
         $data->motivoCancelamento = $motivo;
-        
-        $reply = $this->controllerPost("/cobranca/v2/boletos/".$nossoNumero."/cancelar", $data);
-        
+
+        $reply = $this->controllerPost("/cobranca/v2/boletos/" . $nossoNumero . "/cancelar", $data);
+
         $replyData = json_decode($reply->body);
-        
+
         return $replyData;
     }
-    
+
     /**
      * Retorna lista de boletos registrados no banco
      *
@@ -418,31 +418,31 @@ class BancoInter
         $filtro = null,
         $ordem = null,
         $inverterOrdem = false
-    ) : \stdClass {
+    ): \stdClass {
 
         $url = "/cobranca/v2/boletos";
-        $url .= "?dataInicial=".$dataInicial;
-        $url .= "&dataFinal=".$dataFinal;
+        $url .= "?dataInicial=" . $dataInicial;
+        $url .= "&dataFinal=" . $dataFinal;
         if ($filtro) {
-            $url .= "&situacao=".$filtro;
+            $url .= "&situacao=" . $filtro;
         }
         if ($ordem) {
             if (endsWith($ordem, '_DSC')) {
                 $ordem = str_replace('_DSC', '', $ordem);
                 $inverterOrdem = true;
             }
-            $url .= "&ordenarPor=".$ordem;
+            $url .= "&ordenarPor=" . $ordem;
         }
         if ($inverterOrdem) {
             $url .= "&tipoOrdenacao=DESC";
         }
-        $url .= "&paginaAtual=".$pagina;
-        $url .= "&itensPorPagina=".$linhas;
-        
+        $url .= "&paginaAtual=" . $pagina;
+        $url .= "&itensPorPagina=" . $linhas;
+
         $reply = $this->controllerGet($url);
-        
+
         $replyData = json_decode($reply->body);
-        
+
         return $replyData;
     }
 }

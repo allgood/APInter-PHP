@@ -1,21 +1,21 @@
 <?php
+
 namespace ctodobom\APInterPHP\Cobranca;
 
 class Desconto implements \JsonSerializable
 {
-
     private $codigoDesconto = "NAOTEMDESCONTO";
     private $data = "";
     private $taxa = 0.0;
     private $valor = 0.0;
-    
-    const NAO_TEM_DESCONTO = 'NAOTEMDESCONTO';
-    const VALOR_FIXO = 'VALORFIXODATAINFORMADA';
-    const PERCENTUAL_FIXO = 'PERCENTUALDATAINFORMADA';
-    const VALOR_DIA_CORRIDO = 'VALORANTECIPACAODIACORRIDO';
-    const VALOR_DIA_UTIL = 'VALORANTECIPACAODIAUTIL';
-    const PERCENTUAL_DIA_CORRIDO = 'PERCENTUALVALORNOMINALDIACORRIDO';
-    const PERCENTUAL_DIA_UTIL = 'PERCENTUALVALORNOMINALDIAUTIL';
+
+    public const NAO_TEM_DESCONTO = 'NAOTEMDESCONTO';
+    public const VALOR_FIXO = 'VALORFIXODATAINFORMADA';
+    public const PERCENTUAL_FIXO = 'PERCENTUALDATAINFORMADA';
+    public const VALOR_DIA_CORRIDO = 'VALORANTECIPACAODIACORRIDO';
+    public const VALOR_DIA_UTIL = 'VALORANTECIPACAODIAUTIL';
+    public const PERCENTUAL_DIA_CORRIDO = 'PERCENTUALVALORNOMINALDIACORRIDO';
+    public const PERCENTUAL_DIA_UTIL = 'PERCENTUALVALORNOMINALDIAUTIL';
 
     /**
      * @return string
@@ -80,7 +80,7 @@ class Desconto implements \JsonSerializable
     {
         $this->data = $data;
     }
-    
+
     public function jsonSerialize()
     {
         return get_object_vars($this);
