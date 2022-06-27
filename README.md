@@ -15,7 +15,7 @@ Para utilizar a biblioteca através do composer:
 #### Versão estável
 
 ```
-composer require "ctodobom/api-inter:2.*"
+composer require "ctodobom/api-inter"
 ```
 
 #### Versão de desenvolvimento principal

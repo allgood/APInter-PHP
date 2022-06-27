@@ -36,10 +36,33 @@ $chavePrivada = $_ENV['INTER_PRIVATE_KEY_PATH'];
 $cpfPagador = $_ENV['PAGADOR_CPF'];
 $estadoPagador = $_ENV['PAGADOR_UF'];
 
-$banco = new BancoInter($conta, $certificado, $chavePrivada, new TokenRequest($_ENV['INTER_CLIENT_ID'],$_ENV['INTER_CLIENT_SECRET'],'boleto-cobranca.read boleto-cobranca.write'));
+$banco = new BancoInter($conta, $certificado, $chavePrivada, new TokenRequest($_ENV['INTER_CLIENT_ID'],$_ENV['INTER_CLIENT_SECRET'],'boleto-cobranca.read boleto-cobranca.write'), []);
 
 // Se a chave privada estiver encriptada no disco
 // $banco->setKeyPassword("senhadachave");
+
+// define callback para salvar token emitido
+$banco->setTokenNewCallback(function(string $tokenJson) {
+    if ($tokenFile = fopen('inter-oauth-token.txt','w')) {
+        fwrite($tokenFile, $tokenJson);
+        fclose($tokenFile);
+    }
+});
+
+// define callback para obter token do cache
+$banco->setTokenLoadCallback(function() {
+    $oAuthTokenData = null;
+    if ($tokenFile = fopen('inter-oauth-token.txt','r')) {
+        // se tiver arquivo com token, carrega ele e retorna
+        $tokenJson = fread($tokenFile, 8192);
+        $oAuthTokenData = json_decode($tokenJson, true);
+        fclose($tokenFile);
+        return $oAuthTokenData;
+    } else {
+        // retorno "falso" força a emissão de novo token
+        return false;
+    }
+});
 
 $pagador = new Pagador();
 $pagador->setTipoPessoa(Pagador::PESSOA_FISICA);
