@@ -53,7 +53,7 @@ class BancoInter
     private $oAuthToken = null;
     private $tokenExpiresIn = null;
     private $tokenTimestamp = null;
-    
+
     private ?Closure $tokenNewCallback = null;
     private ?Closure $tokenLoadCallback = null;
 
@@ -148,7 +148,7 @@ class BancoInter
      * Tenta carregar token através de callback, verifica se tem o token oAuth
      * disponível, se ele está expirado, requisitando novo token e executando
      * o callback se necessário.
-     * 
+     *
      * @param boolean $emitCallbacks Callbacks serão executados (default true)
      */
     private function checkOAuthToken($emitCallbacks = true)
@@ -157,11 +157,10 @@ class BancoInter
             $loadedTokenData = ($this->tokenLoadCallback)();
             $this->importOAuthToken($loadedTokenData);
         }
-        
-        $curtime = time();
-        
-        if (!$this->oAuthToken || $this->tokenTimestamp + $this->tokenExpiresIn < $curtime - 10) {
 
+        $curtime = time();
+
+        if (!$this->oAuthToken || $this->tokenTimestamp + $this->tokenExpiresIn < $curtime - 10) {
             $reply = $this->controllerPost("/oauth/v2/token", $this->tokenRequest, null, false);
 
             $replyData = json_decode($reply->body);
@@ -469,39 +468,41 @@ class BancoInter
     /**
      * Define uma função a ser chamada quando um novo token for emitido,
      * permitindo que a aplicação armazene o novo token em um cache
-     * 
+     *
      * A função irá receber o token formatado como uma string JSON sobre
      * a saída do método exportOAuthToken(), que poderá ser usada para
      * importar o token posteriormente no parâmetro $oAuthTokenData do
      * construtor da classe BancoInter.
-     * 
+     *
      * É aconselhável que a função faça uso de alguma implementação de
      * cache e semáforos para garantir que a o token seja utilizado
      * corretamente entre processos concorrentes.
-     * 
+     *
      * @param Closure $callback
      */
-    public function setTokenNewCallback(Closure $callback) {
+    public function setTokenNewCallback(Closure $callback)
+    {
         $this->tokenNewCallback = $callback;
     }
-    
+
     /**
-     * Define uma função a ser chamada sempre que for necessária a 
+     * Define uma função a ser chamada sempre que for necessária a
      * utilização do token oAuth permitindo a carga do token a partir
      * do cache e a contabilização da utilização tanto com base na
      * quantidade quanto com base no tempo.
-     * 
+     *
      * A função deve retornar um array com os elementos access_token,
      * expires_in e timestamp, ou false caso um novo token deva
      * ser emitido.
-     * 
+     *
      * É aconselhável que a função faça uso de alguma implementação de
      * cache e semáforos para garantir que a contabilização ocorra de forma
      * coerente entre processos.
-     * 
+     *
      * @param Closure $callback
      */
-    public function setTokenLoadCallback(Closure $callback) {
+    public function setTokenLoadCallback(Closure $callback)
+    {
         $this->tokenLoadCallback = $callback;
     }
 }
