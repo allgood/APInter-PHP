@@ -508,4 +508,21 @@ class BancoInter
     {
         $this->tokenLoadCallback = $callback;
     }
+
+
+    /**
+     * Retorna o saldo da conta na data informada. Caso não seja informada
+     * uma data, retorna o saldo atual.
+     *
+     * @param \DateTime $dataSaldo
+     * @return float
+     */
+    public function getSaldo(\DateTime $dataSaldo = new \DateTime()): ?float {
+
+        $reply = $this->controllerGet("/banking/v2/saldo?dataSaldo=" . $dataSaldo->format('Y-m-d'));
+        $replyData = json_decode($reply->body);
+
+        return $replyData->disponivel ?? null;
+
+    }
 }
