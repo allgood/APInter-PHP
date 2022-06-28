@@ -52,7 +52,8 @@ $banco->setTokenNewCallback(function(string $tokenJson) {
 // define callback para obter token do cache
 $banco->setTokenLoadCallback(function() {
     $oAuthTokenData = null;
-    if ($tokenFile = fopen('inter-oauth-token.txt','r')) {
+    // uso do @ para evitar o warning se o arquivo não existe
+    if (($tokenFile = @fopen('inter-oauth-token.txt','r')) !== false) {
         // se tiver arquivo com token, carrega ele e retorna
         $tokenJson = fread($tokenFile, 8192);
         $oAuthTokenData = json_decode($tokenJson, true);
