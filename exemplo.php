@@ -144,7 +144,7 @@ try {
 
 try {
     echo "\nConsultando boleto antigo\n";
-    $boleto2 = $banco->getBoleto("00571817313");
+    $boleto2 = $banco->getBoleto("00571817313"); // alterar para um número de boleto seu
     var_dump($boleto2);
 } catch ( BancoInterException $e ) {
     echo "\n\n".$e->getMessage();

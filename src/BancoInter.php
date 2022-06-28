@@ -154,8 +154,11 @@ class BancoInter
     private function checkOAuthToken($emitCallbacks = true)
     {
         if ($emitCallbacks && $this->tokenLoadCallback) {
-            $loadedTokenData = ($this->tokenLoadCallback)();
-            $this->importOAuthToken($loadedTokenData);
+            if (($loadedTokenData = ($this->tokenLoadCallback)()) !== false) {
+                $this->importOAuthToken($loadedTokenData);
+            } else {
+                $this->oAuthToken = false;
+            }
         }
 
         $curtime = time();

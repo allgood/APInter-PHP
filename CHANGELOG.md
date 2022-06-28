@@ -16,6 +16,7 @@ Versões PATCH apenas corrigem bugs de forma compatível à versão anterior MAJ
 Registro das alterações:
 ------------------------
 
+2.1.1 - correção de bug quando carga pelo callback retorna falso
 2.1.0 - suporte à callbacks para salvar, recuperar e contabilizar uso do token
 2.0.0 - suporte à API 2.0 do Banco Inter
 1.0.3 -  suporte à primeira versão da API do Banco Inter - deprecado
