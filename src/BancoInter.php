@@ -525,4 +525,25 @@ class BancoInter
 
         return $replyData->disponivel ?? null;
     }
+
+    /**
+     * Consulta o extrato em um período entre datas específico. Para utilizar esta chamada,
+     * suas credenciais junto ao Banco Inter precisam ter acesso à permissão "Consulta de extrato
+     * e saldo", e você precisa declarar o escopo extrato.read ao criar o TokenRequest.
+     *
+     * @param \DateTime dataInicio
+     * @param \DateTime dataFim
+     * @return \stdClass
+     */
+    public function getExtrato(\DateTime $dataInicio, \DateTime $dataFim): \stdClass
+    {
+        $params['dataInicio'] = $dataInicio->format('Y-m-d');
+        $params['dataFim'] = $dataFim->format('Y-m-d');
+
+        $url = "/banking/v2/extrato?" . http_build_query($params);
+
+        $reply = $this->controllerGet($url);
+
+        return json_decode($reply->body);
+    }
 }
