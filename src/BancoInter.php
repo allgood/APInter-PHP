@@ -508,4 +508,42 @@ class BancoInter
     {
         $this->tokenLoadCallback = $callback;
     }
+
+
+    /**
+     * Retorna o saldo da conta na data informada. Caso não seja informada
+     * uma data, retorna o saldo atual.
+     *
+     * @param \DateTime $dataSaldo
+     * @return float
+     */
+    public function getSaldo(\DateTime $dataSaldo = new \DateTime()): ?float
+    {
+
+        $reply = $this->controllerGet("/banking/v2/saldo?dataSaldo=" . $dataSaldo->format('Y-m-d'));
+        $replyData = json_decode($reply->body);
+
+        return $replyData->disponivel ?? null;
+    }
+
+    /**
+     * Consulta o extrato em um período entre datas específico. Para utilizar esta chamada,
+     * suas credenciais junto ao Banco Inter precisam ter acesso à permissão "Consulta de extrato
+     * e saldo", e você precisa declarar o escopo extrato.read ao criar o TokenRequest.
+     *
+     * @param \DateTime dataInicio
+     * @param \DateTime dataFim
+     * @return \stdClass
+     */
+    public function getExtrato(\DateTime $dataInicio, \DateTime $dataFim): \stdClass
+    {
+        $params['dataInicio'] = $dataInicio->format('Y-m-d');
+        $params['dataFim'] = $dataFim->format('Y-m-d');
+
+        $url = "/banking/v2/extrato?" . http_build_query($params);
+
+        $reply = $this->controllerGet($url);
+
+        return json_decode($reply->body);
+    }
 }
