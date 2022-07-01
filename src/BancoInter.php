@@ -519,7 +519,9 @@ class BancoInter
      */
     public function getSaldo(\DateTime $dataSaldo = null): ?float
     {
-        if (!$dataSaldo) $dataSaldo = new \DateTime();
+        if (!$dataSaldo) {
+            $dataSaldo = new \DateTime();
+        }
 
         $reply = $this->controllerGet("/banking/v2/saldo?dataSaldo=" . $dataSaldo->format('Y-m-d'));
         $replyData = json_decode($reply->body);
