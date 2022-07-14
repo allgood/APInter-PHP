@@ -17,8 +17,6 @@ $cnpj = $_ENV['INTER_CNPJ'];
 $certificado = $_ENV['INTER_CERTIFICATE_PATH'];
 $chavePrivada = $_ENV['INTER_PRIVATE_KEY_PATH'];
 
-
-
 // A T E N Ç Ã O
 //
 // Todos os dados verificáveis precisam ser válidos
@@ -168,3 +166,88 @@ try {
 }
 
 echo "\n\n";
+
+// Exemplos de utilização dos endpoints de saldo e extrato do Inter
+
+// Primeiro, cria uma instância da classe BancoInter, observe que o scope necessário é o extrato.read
+// Verifique se seu certificado possui esta permissão no Internet Banking, em "Suas aplicações"
+$banco = new BancoInter($conta, $certificado, $chavePrivada, new TokenRequest($_ENV['INTER_CLIENT_ID'],$_ENV['INTER_CLIENT_SECRET'],'extrato.read'));
+
+// Retorna o saldo atual
+try {
+    //Se não passar nenhuma data como parâmetreo, retorna o saldo atual, número float
+    $saldo = $banco->getSaldo();
+    if ($saldo)
+    {
+        echo "\n\nSeu saldo hoje: R$ ".number_format($saldo, 2, ",", ".")."\n\n";
+    }
+    else {
+        echo "\n\nO saldo retornou nulo\n\n";
+    }
+}
+catch ( BancoInterException $e ) {
+    echo "\n\n".$e->getMessage();
+    echo "\n\nCabeçalhos: \n";
+    echo $e->reply->header;
+    echo "\n\nConteúdo: \n";
+    echo $e->reply->body;
+}
+
+// Retorna o saldo em uma data específica
+try {
+    //Retorna o saldo no último dia do ano, para a contabilidade, por exemplo
+    $dataDoSaldo = new DateTime('2021-12-31');
+    $saldo = $banco->getSaldo($dataDoSaldo);
+    if ($saldo)
+    {
+        echo "\n\nSeu saldo em ".$dataDoSaldo->format('d/m/Y').": R$ ".number_format($saldo, 2, ",", ".")."\n\n";
+    }
+    else {
+        echo "\n\nO saldo retornou nulo\n\n";
+    }
+}
+catch ( BancoInterException $e ) {
+    echo "\n\n".$e->getMessage();
+    echo "\n\nCabeçalhos: \n";
+    echo $e->reply->header;
+    echo "\n\nConteúdo: \n";
+    echo $e->reply->body;
+}
+
+// Retorna o extrato dos últimos 7 dias, incluindo o dia atual
+// Segue parte de exemplo real de como o extrato é retornado:
+//
+//object(stdClass)#93 (1) {
+//["transacoes"]=>
+//  array(74) {
+//    [0]=>
+//    object(stdClass)#36 (6) {
+//    ["dataEntrada"]=>
+//      string(10) "2022-07-11"
+//    ["tipoTransacao"]=>
+//      string(3) "PIX"
+//    ["tipoOperacao"]=>
+//      string(1) "C"
+//    ["valor"]=>
+//      string(4) "24.9"
+//    ["titulo"]=>
+//      string(12) "Pix recebido"
+//    ["descricao"]=>
+//      string(47) "PIX RECEBIDO - Cp :00000000-HUGO BRAGA"
+
+try {
+    $dataFim = new DateTime();
+    $dataInicio = new DateTime();
+    $dataInicio->sub(new DateInterval("P7D"));
+
+    $extrato = $banco->getExtrato($dataInicio, $dataFim);
+    echo "\n\nSeu extrato:\n\n";
+    var_dump($extrato);
+
+} catch ( BancoInterException $e ) {
+    echo "\n\n".$e->getMessage();
+    echo "\n\nCabeçalhos: \n";
+    echo $e->reply->header;
+    echo "\n\nConteúdo: \n";
+    echo $e->reply->body;
+}
