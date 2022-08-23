@@ -1,7 +1,7 @@
 APInter-PHP
 ===========
 
-Projeto com o início de uma biblioteca para a utilização das API fornecidas pelo Banco Inter.
+Projeto com o início de uma biblioteca para a utilização das APIs fornecidas pelo Banco Inter (077).
 
 Inicialmente apenas a criação de boletos é suportada.
 
