@@ -213,9 +213,10 @@ class BancoInter
      */
     public function controllerPost(
         string $url,
-        \JsonSerializable $data,
+               $data,
         array $http_params = null,
-        bool $postJson = true
+        bool $postJson = true,
+        bool $methodPut = false
     ) {
 
         if ($http_params == null) {
@@ -244,7 +245,16 @@ class BancoInter
             $this->controllerInit($http_params);
             curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL . $url);
 
-            curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
+            if ($methodPut)
+            {
+                curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'PUT');
+            }
+            else
+            {
+                curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
+            }
+
+
             curl_setopt($this->curl, CURLOPT_POSTFIELDS, $prepared_data);
 
             $curlReply = curl_exec($this->curl);
@@ -435,11 +445,11 @@ class BancoInter
     public function listaBoletos(
         string $dataInicial,
         string $dataFinal,
-        $pagina = 0,
-        $linhas = 20,
-        $filtro = null,
-        $ordem = null,
-        $inverterOrdem = false
+               $pagina = 0,
+               $linhas = 20,
+               $filtro = null,
+               $ordem = null,
+               $inverterOrdem = false
     ): \stdClass {
 
         $url = "/cobranca/v2/boletos";
@@ -549,4 +559,76 @@ class BancoInter
 
         return json_decode($reply->body);
     }
+
+    /**
+     * Consulta o extrato COMPLETO em um período entre datas específico. Para utilizar esta chamada,
+     * suas credenciais junto ao Banco Inter precisam ter acesso à permissão "Consulta de extrato
+     * e saldo", e você precisa declarar o escopo extrato.read ao criar o TokenRequest.
+     *
+     * Referência do extrato completo: https://developers.bancointer.com.br/reference/extratocomplete
+     *
+     * @param \DateTime dataInicio
+     * @param \DateTime dataFim
+     * @return \stdClass
+     */
+    public function getExtratoCompleto(\DateTime $dataInicio, \DateTime $dataFim): \stdClass
+    {
+        $params['dataInicio'] = $dataInicio->format('Y-m-d');
+        $params['dataFim'] = $dataFim->format('Y-m-d');
+        $params['tamanhoPagina'] = 400;
+
+        $url = "/banking/v2/extrato/completo?" . http_build_query($params);
+
+        $reply = $this->controllerGet($url);
+
+        return json_decode($reply->body);
+    }
+
+
+    /**
+     * Cria o webhook que receberá atualizações automáticos dos boletos (cobranças)
+     * Referência: https://developers.bancointer.com.br/reference/criarwebhookboleto
+     *
+     * @param $url
+     * @return boolean
+     */
+
+    public function createWebhook($webhookUrl) {
+
+        $url = "/cobranca/v2/boletos/webhook";
+
+        $params = new \stdClass();
+
+        $params->webhookUrl = $webhookUrl;
+
+        //Verifica se a URL do webhook é válida
+        if (!filter_var($webhookUrl, FILTER_VALIDATE_URL)) return false;
+
+        try {
+            $reply = $this->controllerPost($url, $params, null, true, true);
+        } catch (BancoInterException $e) {
+            return false;
+        }
+
+        if ($reply) return true;
+
+    }
+
+    /**
+     * Retorna o webhook cadastrado, se houver
+     *
+     * @return string
+     */
+
+    public function getWebhook(): string {
+
+        $url = "/cobranca/v2/boletos/webhook";
+
+        $reply = $this->controllerGet($url);
+
+        return $reply->body;
+
+    }
+
+
 }
