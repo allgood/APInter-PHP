@@ -246,12 +246,9 @@ class BancoInter
             curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL . $url);
 
 
-            if ($methodPut)
-            {
+            if ($methodPut) {
                 curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'PUT');
-            }
-            else
-            {
+            } else {
                 curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
             }
 
@@ -446,11 +443,11 @@ class BancoInter
     public function listaBoletos(
         string $dataInicial,
         string $dataFinal,
-               $pagina = 0,
-               $linhas = 20,
-               $filtro = null,
-               $ordem = null,
-               $inverterOrdem = false
+        $pagina = 0,
+        $linhas = 20,
+        $filtro = null,
+        $ordem = null,
+        $inverterOrdem = false
     ): \stdClass {
 
         $url = "/cobranca/v2/boletos";
@@ -622,11 +619,9 @@ class BancoInter
 
         if ($reply) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
-
     }
 
     /**
@@ -642,7 +637,6 @@ class BancoInter
         $reply = $this->controllerGet($url);
 
         return $reply->body;
-
     }
 
     /**
