@@ -570,10 +570,16 @@ class BancoInter
      * @param \DateTime $dataFim
      * @param int $pagina Número da página, a primeira página é 0 (zero)
      * @param string $tipoOperacao 'C' para crédito, 'D' para débito
-     * @param string $tipoTransacao PIX, CAMBIO, ESTORNO, INVESTIMENTO, TRANSFERENCIA, PAGAMENTO, BOLETO_COBRANCA, OUTROS
+     * @param string $tipoTransacao PIX, CAMBIO, ESTORNO, etc.
      * @return \stdClass
      */
-    public function getExtratoCompleto(\DateTime $dataInicio, \DateTime $dataFim, int $pagina = 0, int $tamanhoPagina = 50, string $tipoOperacao = '', string $tipoTransacao = ''): \stdClass
+    public function getExtratoCompleto(
+        \DateTime $dataInicio,
+        \DateTime $dataFim,
+        int $pagina = 0,
+        int $tamanhoPagina = 50,
+        string $tipoOperacao = '',
+        string $tipoTransacao = ''): \stdClass
     {
         $params['dataInicio'] = $dataInicio->format('Y-m-d');
         $params['dataFim'] = $dataFim->format('Y-m-d');
