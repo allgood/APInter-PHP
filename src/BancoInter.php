@@ -213,7 +213,7 @@ class BancoInter
      */
     public function controllerPost(
         string $url,
-               $data,
+        \JsonSerializable $data,
         array $http_params = null,
         bool $postJson = true,
         bool $methodPut = false
@@ -565,13 +565,14 @@ class BancoInter
      * Consulta o extrato COMPLETO em um período entre datas específico. Para utilizar esta chamada,
      * suas credenciais junto ao Banco Inter precisam ter acesso à permissão "Consulta de extrato
      * e saldo", e você precisa declarar o escopo extrato.read ao criar o TokenRequest.
+     * O extrato completo é paginado (diferente da função extrato)
      *
      * Referência do extrato completo: https://developers.bancointer.com.br/reference/extratocomplete
      *
      * @param \DateTime $dataInicio
      * @param \DateTime $dataFim
-     * @param int $pagina número da página
-     * @param string $tipoOperacao 'C' para crédito e 'D' para débito
+     * @param int $pagina Número da página, a primeira página é 0 (zero)
+     * @param string $tipoOperacao 'C' para crédito, 'D' para débito
      * @param string $tipoTransacao PIX, CAMBIO, ESTORNO, INVESTIMENTO, TRANSFERENCIA, PAGAMENTO, BOLETO_COBRANCA, OUTROS
      * @return \stdClass
      */
@@ -600,7 +601,7 @@ class BancoInter
      * @return boolean
      */
 
-    public function createWebhook($webhookUrl)
+    public function createWebhook($webhookUrl): bool
     {
         $url = "/cobranca/v2/boletos/webhook";
 
@@ -621,6 +622,9 @@ class BancoInter
 
         if ($reply) {
             return true;
+        }
+        else {
+            return false;
         }
 
     }
