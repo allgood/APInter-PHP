@@ -213,7 +213,7 @@ class BancoInter
      */
     public function controllerPost(
         string $url,
-        \JsonSerializable $data,
+               $data,
         array $http_params = null,
         bool $postJson = true,
         bool $methodPut = false
@@ -245,9 +245,13 @@ class BancoInter
             $this->controllerInit($http_params);
             curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL . $url);
 
-            if ($methodPut) {
+
+            if ($methodPut)
+            {
                 curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'PUT');
-            } else {
+            }
+            else
+            {
                 curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
             }
 
@@ -442,11 +446,11 @@ class BancoInter
     public function listaBoletos(
         string $dataInicial,
         string $dataFinal,
-        $pagina = 0,
-        $linhas = 20,
-        $filtro = null,
-        $ordem = null,
-        $inverterOrdem = false
+               $pagina = 0,
+               $linhas = 20,
+               $filtro = null,
+               $ordem = null,
+               $inverterOrdem = false
     ): \stdClass {
 
         $url = "/cobranca/v2/boletos";
@@ -571,7 +575,7 @@ class BancoInter
      * @param string $tipoTransacao PIX, CAMBIO, ESTORNO, INVESTIMENTO, TRANSFERENCIA, PAGAMENTO, BOLETO_COBRANCA, OUTROS
      * @return \stdClass
      */
-    public function getExtratoCompleto(\DateTime $dataInicio, \DateTime $dataFim, int $pagina = 0, int $tamanhoPagina = 50, $tipoOperacao = '', $tipoTransacao = '',): \stdClass
+    public function getExtratoCompleto(\DateTime $dataInicio, \DateTime $dataFim, int $pagina = 0, int $tamanhoPagina = 50, string $tipoOperacao = '', string $tipoTransacao = ''): \stdClass
     {
         $params['dataInicio'] = $dataInicio->format('Y-m-d');
         $params['dataFim'] = $dataFim->format('Y-m-d');
@@ -581,7 +585,6 @@ class BancoInter
         $params['tipoTransacao'] = $tipoTransacao;
 
         $url = "/banking/v2/extrato/completo?" . http_build_query($params);
-
 
         $reply = $this->controllerGet($url);
 
@@ -599,7 +602,6 @@ class BancoInter
 
     public function createWebhook($webhookUrl)
     {
-
         $url = "/cobranca/v2/boletos/webhook";
 
         $params = new \stdClass();
@@ -620,6 +622,7 @@ class BancoInter
         if ($reply) {
             return true;
         }
+
     }
 
     /**
@@ -630,12 +633,12 @@ class BancoInter
 
     public function getWebhook(): string
     {
-
         $url = "/cobranca/v2/boletos/webhook";
 
         $reply = $this->controllerGet($url);
 
         return $reply->body;
+
     }
 
     /**
@@ -653,7 +656,7 @@ class BancoInter
 
     public function controllerDelete(
         string $url,
-        array $http_params = null,
+        array $http_params = null
     ) {
 
         if ($http_params == null) {
