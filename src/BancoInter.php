@@ -579,8 +579,8 @@ class BancoInter
         int $pagina = 0,
         int $tamanhoPagina = 50,
         string $tipoOperacao = '',
-        string $tipoTransacao = ''): \stdClass
-    {
+        string $tipoTransacao = ''
+    ): \stdClass {
         $params['dataInicio'] = $dataInicio->format('Y-m-d');
         $params['dataFim'] = $dataFim->format('Y-m-d');
         $params['pagina'] = $pagina;
