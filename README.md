@@ -46,6 +46,6 @@ Facilitou sua vida?
 
 Se o código do projeto ajudou você em uma tarefa complexa, considere fazer uma doação ao autor pelo PIX abaixo.
 
-<img src="https://github.com/allgood/APInter-PHP/assets/6070736/dd787a4b-c740-4874-9054-43abc49d41b3" width="450">
+![image](https://github.com/allgood/APInter-PHP/assets/6070736/00958122-b35f-47ea-910e-476cb341bd24)
 
 Chave Pix: 80fd8916-1131-4844-917e-2732eaa2ba74
