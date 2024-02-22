@@ -1,4 +1,5 @@
 /.buildpath
+.idea/
 /composer.phar
 /vendor/
 /private

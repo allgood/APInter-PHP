@@ -215,7 +215,8 @@ class BancoInter
         string $url,
         \JsonSerializable $data,
         array $http_params = null,
-        bool $postJson = true
+        bool $postJson = true,
+        bool $methodPut = false
     ) {
 
         if ($http_params == null) {
@@ -244,7 +245,14 @@ class BancoInter
             $this->controllerInit($http_params);
             curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL . $url);
 
-            curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
+
+            if ($methodPut) {
+                curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'PUT');
+            } else {
+                curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
+            }
+
+
             curl_setopt($this->curl, CURLOPT_POSTFIELDS, $prepared_data);
 
             $curlReply = curl_exec($this->curl);
@@ -548,5 +556,155 @@ class BancoInter
         $reply = $this->controllerGet($url);
 
         return json_decode($reply->body);
+    }
+
+    /**
+     * Consulta o extrato COMPLETO em um período entre datas específico. Para utilizar esta chamada,
+     * suas credenciais junto ao Banco Inter precisam ter acesso à permissão "Consulta de extrato
+     * e saldo", e você precisa declarar o escopo extrato.read ao criar o TokenRequest.
+     * O extrato completo é paginado (diferente da função extrato)
+     *
+     * Referência do extrato completo: https://developers.bancointer.com.br/reference/extratocomplete
+     *
+     * @param \DateTime $dataInicio
+     * @param \DateTime $dataFim
+     * @param int $pagina Número da página, a primeira página é 0 (zero)
+     * @param string $tipoOperacao 'C' para crédito, 'D' para débito
+     * @param string $tipoTransacao PIX, CAMBIO, ESTORNO, etc.
+     * @return \stdClass
+     */
+    public function getExtratoCompleto(
+        \DateTime $dataInicio,
+        \DateTime $dataFim,
+        int $pagina = 0,
+        int $tamanhoPagina = 50,
+        string $tipoOperacao = '',
+        string $tipoTransacao = ''
+    ): \stdClass {
+        $params['dataInicio'] = $dataInicio->format('Y-m-d');
+        $params['dataFim'] = $dataFim->format('Y-m-d');
+        $params['pagina'] = $pagina;
+        $params['tamanhoPagina'] = $tamanhoPagina;
+        $params['tipoOperacao'] = $tipoOperacao;
+        $params['tipoTransacao'] = $tipoTransacao;
+
+        $url = "/banking/v2/extrato/completo?" . http_build_query($params);
+
+        $reply = $this->controllerGet($url);
+
+        return json_decode($reply->body);
+    }
+
+
+    /**
+     * Cria o webhook que receberá atualizações automáticos dos boletos (cobranças)
+     * Referência: https://developers.bancointer.com.br/reference/criarwebhookboleto
+     *
+     * @param $url
+     * @return boolean
+     */
+
+    public function createWebhook($webhookUrl): bool
+    {
+        $url = "/cobranca/v2/boletos/webhook";
+
+        $params = new \stdClass();
+
+        $params->webhookUrl = $webhookUrl;
+
+        //Verifica se a URL do webhook é válida
+        if (!filter_var($webhookUrl, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+
+        try {
+            $reply = $this->controllerPost($url, $params, null, true, true);
+        } catch (BancoInterException $e) {
+            return false;
+        }
+
+        if ($reply) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Retorna o webhook cadastrado, se houver
+     *
+     * @return string
+     */
+
+    public function getWebhook(): string
+    {
+        $url = "/cobranca/v2/boletos/webhook";
+
+        $reply = $this->controllerGet($url);
+
+        return $reply->body;
+    }
+
+    /**
+     * Deleta o webhook, se houver. Caso não haja nenhum webhook, retornará o código HTTP 404
+     */
+    public function deleteWebhook(): string
+    {
+
+        $url = "/cobranca/v2/boletos/webhook";
+
+        $reply = $this->controllerDelete($url);
+
+        return $reply->body;
+    }
+
+    public function controllerDelete(
+        string $url,
+        array $http_params = null
+    ) {
+
+        if ($http_params == null) {
+            $http_params = array(
+                'accept: application/json',
+            );
+        }
+
+        if ($this->oAuthToken) {
+            $http_params[] = 'Authorization: Bearer ' . $this->oAuthToken;
+        }
+
+        $retry = 5;
+        while ($retry > 0) {
+            $this->controllerInit($http_params);
+            curl_setopt($this->curl, CURLOPT_URL, $this->apiBaseURL . $url);
+
+            curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
+
+            $curlReply = curl_exec($this->curl);
+            if (!$curlReply) {
+                $curl_error = curl_error($this->curl);
+            }
+            $http_code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
+            $header_size = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
+            curl_close($this->curl);
+            $this->curl = null;
+
+            $reply = new \stdClass();
+            $reply->header = substr($curlReply, 0, $header_size);
+            $reply->body = substr($curlReply, $header_size);
+
+            if ($http_code == 503) {
+                $retry--;
+            } else {
+                $retry = 0;
+            }
+        }
+        if ($http_code == 0) {
+            throw new \Exception("Curl error: " . $curl_error);
+        }
+        if ($http_code < 200 || $http_code > 299) {
+            throw new BancoInterException("Erro HTTP " . $http_code, $http_code, $reply);
+        }
+        return $reply;
     }
 }
