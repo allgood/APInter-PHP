@@ -83,6 +83,28 @@ class Desconto implements \JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return get_object_vars($this);
+        if ($this->codigoDesconto == self::NAO_TEM_DESCONTO) {
+            return [
+                'codigo' => self::PERCENTUAL_FIXO, // "PERCENTUALDATAINFORMADA"
+                'taxa' => 0,
+                'quantidadeDias' => 0
+            ];
+        }
+
+        $out = [
+            'codigo' => $this->codigoDesconto,
+            'taxa' => $this->taxa,
+            'valor' => $this->valor
+        ];
+
+        if ($this->data !== '') {
+            if (is_numeric($this->data)) {
+                $out['quantidadeDias'] = (int)$this->data;
+            } else {
+                $out['data'] = $this->data;
+            }
+        }
+        
+        return $out;
     }
 }

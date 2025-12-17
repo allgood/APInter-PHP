@@ -1,10 +1,9 @@
 APInter-PHP
 ===========
 
-Biblioteca para a utilização das APIs fornecidas pelo Banco Inter (077).
+Projeto com o início de uma biblioteca para a utilização das API fornecidas pelo Banco Inter.
 
-Suporte a boletos (cobrança), extrato, saldo e webhook de boletos.
-Não tem suporte a pagamentos DARF ou agendamento de pagamentos de boletos.
+Inicialmente apenas a criação de boletos é suportada.
 
 Como usar:
 ----------
@@ -47,6 +46,13 @@ Facilitou sua vida?
 
 Se o código do projeto ajudou você em uma tarefa complexa, considere fazer uma doação ao autor pelo PIX abaixo.
 
-![image](https://github.com/allgood/APInter-PHP/assets/6070736/00958122-b35f-47ea-910e-476cb341bd24)
+![image](https://user-images.githubusercontent.com/6070736/116247400-317e3680-a741-11eb-9434-9f226eec39b5.png)
 
 Chave Pix: 80fd8916-1131-4844-917e-2732eaa2ba74
+
+Propaganda do Autor:
+--------------------
+
+Não relacionado à essa biblioteca diretamente, mas fazendo uso da mesma API, desenvolvi um app para Android que emite e gerencia boletos do Banco Inter. A aplicação é de código fechado e com o objetivo de ser completamente grátis, mantida por publicidade.
+
+[Para instalar é só clicar aqui!](https://play.google.com/store/apps/details?id=dev.todobom.interbill)

@@ -19,10 +19,13 @@ class Boleto implements \JsonSerializable
     private $desconto3 = null;
     private $multa = null;
     private $mora = null;
+    private $beneficiarioFinal = null;
+    private $pixCopiaECola = null;
 
     private $nossoNumero = null;
     private $codigoBarras = null;
     private $linhaDigitavel = null;
+    private $codigoSolicitacao = null;
 
     private $controller = null;
 
@@ -340,6 +343,36 @@ class Boleto implements \JsonSerializable
         $this->linhaDigitavel = $linhaDigitavel;
     }
 
+    public function getCodigoSolicitacao()
+    {
+        return $this->codigoSolicitacao;
+    }
+
+    public function setCodigoSolicitacao($codigo)
+    {
+        $this->codigoSolicitacao = $codigo;
+    }
+
+    public function getBeneficiarioFinal(): ?Pagador
+    {
+        return $this->beneficiarioFinal;
+    }
+
+    public function setBeneficiarioFinal(Pagador $beneficiarioFinal)
+    {
+        $this->beneficiarioFinal = $beneficiarioFinal;
+    }
+
+    public function getPixCopiaECola()
+    {
+        return $this->pixCopiaECola;
+    }
+
+    public function setPixCopiaECola($pix)
+    {
+        $this->pixCopiaECola = $pix;
+    }
+
     /**
      *
      * @param BancoInter $controller
@@ -361,6 +394,31 @@ class Boleto implements \JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return get_object_vars($this);
+        $data = [
+            'seuNumero' => $this->seuNumero,
+            'valorNominal' => $this->valorNominal,
+            'valorAbatimento' => $this->valorAbatimento,
+            'dataVencimento' => $this->dataVencimento,
+            'numDiasAgenda' => $this->numDiasAgenda,
+            'pagador' => $this->pagador,
+            'mensagem' => $this->mensagem
+        ];
+
+        if ($this->desconto1->getCodigoDesconto() !== Desconto::NAO_TEM_DESCONTO) {
+            $data['desconto'] = $this->desconto1;
+        }
+
+        if ($this->multa->getCodigoMulta() !== Multa::NAO_TEM_MULTA) {
+            $data['multa'] = $this->multa;
+        }
+
+        if ($this->mora->getCodigoMora() !== Mora::ISENTO) {
+            $data['mora'] = $this->mora;
+        }
+
+        if ($this->beneficiarioFinal) {
+            $data['beneficiarioFinal'] = $this->beneficiarioFinal;
+        }
+        return $data;
     }
 }

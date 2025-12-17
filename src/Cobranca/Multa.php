@@ -78,6 +78,9 @@ class Multa implements \JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return get_object_vars($this);
+        $out = ['codigo' => $this->codigoMulta];
+        if ($this->taxa) { $out['taxa'] = $this->taxa; }
+        if ($this->valor) { $out['valor'] = $this->valor; }
+        return $out;
     }
 }
